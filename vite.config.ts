@@ -39,8 +39,10 @@ export default defineConfig({
   build: {
     // Optimizaciones para producción
     target: 'esnext',
-    minify: 'terser',
-    sourcemap: false, // Cambia a true si necesitas debugging en producción
+    minify: 'esbuild',
+    sourcemap: false, // cambia a true si necesitas depurar producción
+    cssCodeSplit: true, // mejora tiempos de carga en producción
+    chunkSizeWarningLimit: 1000, // evita warnings por archivos grandes
   },
   server: {
     host: true,
