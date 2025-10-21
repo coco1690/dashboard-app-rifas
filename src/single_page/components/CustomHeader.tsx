@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "react-router";
 import { CustomLogo } from "@/components/custom/CustomLogo";
 import { useAuthStore } from "@/stores/authStore";
-import {  LogOut, User } from "lucide-react";
+import { LogOut, User, Ticket } from "lucide-react";
 
 
 export const CustomHeader = () => {
@@ -28,7 +28,7 @@ export const CustomHeader = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full  backdrop-blur bg-gray-800">
+    <header className="sticky top-0 z-50 w-full backdrop-blur bg-gray-800">
       <div className="container mx-auto px-4 lg:px-8">
         <div className="flex h-20 items-center justify-between">
           {/* Logo */}
@@ -68,30 +68,34 @@ export const CustomHeader = () => {
             </Link>
           </nav>
 
-          {/* Search and Cart */}
-          <div className="flex items-center space-x-4 ">
-            {/* <Button variant="ghost" size="icon" className="md:hidden">
-              <Search className="h-5 w-5" />
-            </Button> */}
-            
-            {/* <Button variant="ghost" size="icon" className="relative">
-              <ShoppingBag className="h-5 w-5" />
-              {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 h-5 w-5 rounded-full bg-primary text-primary-foreground text-xs flex items-center justify-center">
-                  {cartCount}
-                </span>
-              )}
-            </Button> */}
+          {/* Actions - Mobile & Desktop */}
+          <div className="flex items-center space-x-2 md:space-x-4">
+            {/* Descarga de Boletas - Solo móvil (ícono) */}
+            <Link 
+              to="/descargas" 
+              title="Descarga de Boletas"
+              className="md:hidden"
+            >
+              <Button
+                variant="ghost"
+                size="icon"
+                className={`text-white hover:bg-teal-600 hover:text-white ${
+                  isActiveLink('/descargas') ? 'bg-teal-600' : ''
+                }`}
+              >
+                <Ticket className="h-5 w-5" />
+              </Button>
+            </Link>
 
             {/* Botones condicionales según el estado de autenticación */}
             {user ? (
               // Usuario autenticado - Mostrar botones según el tipo
               <>
-                {/* Botón Admin - Solo si es admin (ROJO) */}
+                {/* Botón Admin - Solo si es admin (TEAL) */}
                 {user.user_type === 'admin' && (
                   <Link to="/admin">
                     <Button 
-                      className="bg-teal-600 hover:bg-teal-700 text-white cursor-pointer "
+                      className="bg-teal-600 hover:bg-teal-700 text-white cursor-pointer"
                     >
                       Admin
                     </Button>
@@ -102,7 +106,7 @@ export const CustomHeader = () => {
                 {user.user_type === 'agencia' && (
                   <Link to="/agency">
                     <Button 
-                      className="bg-blue-600 hover:bg-blue-700 text-white cursor-pointer "
+                      className="bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
                     >
                       Agencia
                     </Button>
@@ -123,21 +127,19 @@ export const CustomHeader = () => {
                 </Button>
               </>
             ) : (
-              // Usuario NO autenticado - Mostrar botones originales
-              <>
-                <Link 
-                  to="/auth/login" 
-                  title="Iniciar sesión"
+              // Usuario NO autenticado - Mostrar botón de login
+              <Link 
+                to="/auth/login" 
+                title="Iniciar sesión"
+              >
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-white hover:bg-teal-600 hover:text-white"
                 >
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="text-white hover:bg-teal-600 hover:text-white"
-                  >
-                    <User className="h-5 w-5" />
-                  </Button>
-                </Link>
-              </>
+                  <User className="h-5 w-5" />
+                </Button>
+              </Link>
             )}
           </div>
         </div>
