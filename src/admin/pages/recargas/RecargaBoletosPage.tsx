@@ -1,6 +1,7 @@
 
 import { HistorialRecargas } from './components/HistorialRecargas'
-import { RecargarBoletosForm } from './components/recargarBoletosForm'
+import { RecargarBoletosForm } from './components/RecargarBoletosForm'
+
 
 export const RecargaBoletosPage = () => {
   return (
