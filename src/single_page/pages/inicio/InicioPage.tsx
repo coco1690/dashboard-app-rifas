@@ -324,7 +324,7 @@ export const InicioPage = () => {
                     estado={rifaActiva.estado}
                     fechaSorteo={rifaActiva.fecha_inicio}
                     loteria={rifaActiva.loteria || "Nacional"}
-                    buttonText="Ver Más"
+                    // buttonText="Ver Más"
                     onButtonClick={() => {
                         document.getElementById('rifa-details')?.scrollIntoView({ behavior: 'smooth' })
                     }}
