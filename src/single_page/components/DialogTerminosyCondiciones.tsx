@@ -157,7 +157,7 @@ export const DialogTerminosyCondiciones = () => {
             <div>
               <h3 className="font-semibold text-base mb-2">11. Pagos con transferencia</h3>
               <p className="text-gray-700">
-                El participante  despues de  realizar el pago tendra que enviar los datos de pago o la captura  al número de WhatsApp de EventosIB.com una vez realizado el pedido, de no hacerlo en ese tiempo su pedido no será procesado.
+                El participante  despues de  realizar el pago tendra que enviar los datos de pago o la captura  al número de WhatsApp de EventosIB.com una vez realizado el pedido, de no hacerlo su pedido no será procesado.
               </p>
             </div>
           </div>
