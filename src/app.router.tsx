@@ -27,6 +27,7 @@ import { AgencyRifasActivas } from "./agency/pages/rifas_activas/AgencyRifasActi
 import { AdminHistorialVentas } from "./admin/pages/historial/AdminHistorialVentas";
 import NewClientePage from "./agency/pages/clients/NewClientePage";
 import CrearAgenciasPage from "./admin/pages/crear_agencias/CrearAgenciasPage";
+import { DialogTerminosyCondiciones } from "./single_page/components/DialogTerminosyCondiciones";
 
 
 
@@ -54,6 +55,10 @@ export const appRouter = createBrowserRouter([
             {
                 path: 'descargas',
                 element: <DescargaBoletasPage />
+            },
+            {
+                path: 'terminos_y_condiciones',
+                element: <DialogTerminosyCondiciones />
             },
 
 

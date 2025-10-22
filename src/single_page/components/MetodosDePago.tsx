@@ -37,7 +37,7 @@ export const MetodosDePago = () => {
             Métodos de Pago
           </h1>
           <p className="text-lg text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
-            En Eventos Don Paul tienes diferentes opciones físicas y digitales para pagar de la manera más fácil y segura.
+            En EventosIB.com tienes diferentes opciones físicas y digitales para pagar de la manera más fácil y segura.
           </p>         
         </div>
 

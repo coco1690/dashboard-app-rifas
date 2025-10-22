@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button"
+
 import {
   Carousel,
   CarouselContent,
@@ -6,13 +6,14 @@ import {
 } from "@/components/ui/carousel"
 import Autoplay from "embla-carousel-autoplay"
 import { useRef } from "react"
+import { DialogTerminosyCondiciones } from "./DialogTerminosyCondiciones"
 
 interface Props {
   title: string
   subTitle?: string
   images?: string[]
   onButtonClick?: () => void
-  buttonText?: string
+  // buttonText?: string
   showImages?: boolean
   precio?: number
   estado?: string
@@ -24,8 +25,8 @@ export const CustomJumbotron = ({
   title,
   subTitle,
   images = [],
-  onButtonClick,
-  buttonText = "Ver Más",
+  // onButtonClick,
+  // buttonText = "Ver Más",
   showImages = true,
   precio,
   estado,
@@ -89,19 +90,13 @@ export const CustomJumbotron = ({
             {/* Botones de acción */}
             <div className="space-y-4">
               <div className="flex flex-col sm:flex-row gap-4 mb-7">
-                <Button
+                {/* <Button
                   className="bg-teal-600 hover:bg-teal-700 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-200 cursor-pointer shadow-lg hover:shadow-xl"
                   onClick={onButtonClick}
                 >
                   {buttonText}
-                </Button>
-
-                <Button
-                  // variant="outline"
-                  className=" bg-blue-700 text-white hover:bg-blue-500 font-semibold px-6 py-3 rounded-lg transition-all duration-200 cursor-pointer"
-                >
-                  Términos y condiciones
-                </Button>
+                </Button> */}
+                <DialogTerminosyCondiciones />
               </div>
 
               {/* Mensaje de estado */}

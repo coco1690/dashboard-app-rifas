@@ -29,15 +29,13 @@ export const CustomFooter = () => {
               <h4 className="font-medium mb-4 text-white">Acerca de nosotros</h4>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li><a href="#" className="hover:text-foreground">¿Quiénes somos?</a></li>
-                <li><a href="#" className="hover:text-foreground">Política de cookies</a></li>
-                <li><a href="#" className="hover:text-foreground">Términos y condiciones</a></li>
                 <li><a href="#" className="hover:text-foreground">Política de tratamiento de datos</a></li>
               </ul>
             </div>
           </div>
           
           <div className="border-t mt-8 pt-8 text-center text-sm text-muted-foreground">
-            <p>&copy; { new Date().getFullYear() } Eventos IB. Todos los derechos reservados.</p>
+            <p>&copy; { new Date().getFullYear() } EventosIB.com Todos los derechos reservados.</p>
           </div>
         </div>
       </footer>
