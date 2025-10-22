@@ -5,7 +5,21 @@ interface EstadisticasRifaProps {
 }
 
 export const CustomProgressBar = ({ totalBoletos, vendidos, rifaDescription }: EstadisticasRifaProps) => {
-  const porcentajeVendido = totalBoletos > 0 ? Math.round((vendidos / totalBoletos) * 100) : 0;
+  // Calcular porcentaje exacto
+  const porcentajeExacto = totalBoletos > 0 ? (vendidos / totalBoletos) * 100 : 0;
+  
+  // Formatear según el valor:
+  // - Si < 1%: mostrar 2 decimales (0.23%)
+  // - Si < 10%: mostrar 1 decimal (5.7%)
+  // - Si >= 10%: sin decimales (15%)
+  const porcentajeVendido = porcentajeExacto < 1 
+    ? porcentajeExacto.toFixed(2)
+    : porcentajeExacto < 10
+      ? porcentajeExacto.toFixed(1)
+      : Math.round(porcentajeExacto);
+
+  // Para la barra y el indicador, usar el valor numérico exacto
+  const porcentajeNumerico = Number(porcentajeVendido);
 
   return (
     <div className="w-full bg-gradient-to-br from-slate-50 to-slate-100 border border-slate-200/60 shadow-lg py-8 px-6">
@@ -27,8 +41,8 @@ export const CustomProgressBar = ({ totalBoletos, vendidos, rifaDescription }: E
 
         {/* Progress Stats */}
         <div className="bg-white rounded-xl border border-slate-200/80 p-6 mb-6 shadow-sm">
-          <div className="flex items-center justify-center mb-4 w-full">
-            <div className="text-center">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-4 w-full">
+            <div className="text-center sm:text-center">
               <p className="text-sm font-bold font-montserrat text-slate-500 tracking-wide mb-1">
                 Progreso de Venta
               </p>
@@ -36,7 +50,7 @@ export const CustomProgressBar = ({ totalBoletos, vendidos, rifaDescription }: E
                 {porcentajeVendido}%
               </p>
             </div>
-            {/* <div className="text-right">
+            {/* <div className="text-center sm:text-right">
               <p className="text-sm font-medium text-slate-500 uppercase tracking-wide mb-1">
                 Boletos Vendidos
               </p>
@@ -51,7 +65,7 @@ export const CustomProgressBar = ({ totalBoletos, vendidos, rifaDescription }: E
             <div className="w-full bg-slate-200 rounded-full h-3 shadow-inner overflow-hidden">
               <div 
                 className="h-full bg-gradient-to-r from-emerald-500 via-emerald-600 to-emerald-700 rounded-full transition-all duration-700 ease-out relative shadow-sm"
-                style={{ width: `${porcentajeVendido}%` }}
+                style={{ width: `${porcentajeExacto}%` }}
               >
                 {/* Shimmer effect */}
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 animate-pulse" />
@@ -59,17 +73,17 @@ export const CustomProgressBar = ({ totalBoletos, vendidos, rifaDescription }: E
             </div>
             
             {/* Progress indicator */}
-            {porcentajeVendido > 0 && (
+            {/* {porcentajeNumerico > 0 && (
               <div 
                 className="absolute top-0 transform -translate-y-8 -translate-x-1/2 transition-all duration-700"
-                style={{ left: `${Math.min(porcentajeVendido, 95)}%` }}
+                style={{ left: `${Math.min(porcentajeExacto, 95)}%` }}
               >
-                <div className="bg-slate-800 text-white text-xs font-semibold py-1 px-2 rounded shadow-lg">
+                <div className="bg-slate-800 text-white text-xs font-semibold py-1 px-2 rounded shadow-lg whitespace-nowrap">
                   {porcentajeVendido}%
                 </div>
                 <div className="w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-slate-800 mx-auto"></div>
               </div>
-            )}
+            )} */}
           </div>
         </div>
 
@@ -86,9 +100,7 @@ export const CustomProgressBar = ({ totalBoletos, vendidos, rifaDescription }: E
                 ¿Cómo funciona el evento?
               </h3>
               <p className="text-slate-700 leading-relaxed text-sm">
-                
                 {rifaDescription}
-                
               </p>
             </div>
           </div>
@@ -97,20 +109,20 @@ export const CustomProgressBar = ({ totalBoletos, vendidos, rifaDescription }: E
         {/* Status Badge */}
         <div className="text-center mt-6">
           <span className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold shadow-sm ${
-            porcentajeVendido === 100 
+            porcentajeNumerico === 100 
               ? 'bg-red-100 text-red-800 border border-red-200' 
-              : porcentajeVendido > 75 
+              : porcentajeNumerico > 75 
                 ? 'bg-amber-100 text-amber-800 border border-amber-200'
                 : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
           }`}>
-            {porcentajeVendido === 100 ? (
+            {porcentajeNumerico === 100 ? (
               <>
                 <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
                 AGOTADO - Sorteo Próximamente
               </>
-            ) : porcentajeVendido > 75 ? (
+            ) : porcentajeNumerico > 75 ? (
               <>
                 <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
