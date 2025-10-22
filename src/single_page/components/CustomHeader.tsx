@@ -80,7 +80,7 @@ export const CustomHeader = () => {
                 variant="ghost"
                 size="icon"
                 className={`text-white hover:bg-amber-400 hover:text-black ${
-                  isActiveLink('/descargas') ? 'bg-teal-600' : ''
+                  isActiveLink('/descargas') ? 'bg-amber-400 text-black' : ''
                 }`}
               >
                 <Ticket className="h-5 w-5" />

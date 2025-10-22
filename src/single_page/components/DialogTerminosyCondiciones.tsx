@@ -20,7 +20,7 @@ export const DialogTerminosyCondiciones = () => {
           Términos y condiciones
         </Button>
       </DialogTrigger>
-      
+
       <DialogContent className="max-w-3xl max-h-[85vh]">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-center mb-2">
@@ -115,7 +115,7 @@ export const DialogTerminosyCondiciones = () => {
                 <div className="ml-4 mb-3">
                   <h5 className="font-semibold text-sm mb-2">8.2.1</h5>
                   <p className="text-gray-700">
-                    El ganador del premio especial deberá enviar un video mencionando a proyectosflores, en el debe mencionar el sorteo, el premio y enseñar el número con el que fue ganador.
+                    El ganador del premio especial deberá enviar un video mencionando a EventosIB.com, en el debe mencionar el sorteo, el premio y enseñar el número con el que fue ganador.
                   </p>
                 </div>
 
@@ -157,19 +157,19 @@ export const DialogTerminosyCondiciones = () => {
             <div>
               <h3 className="font-semibold text-base mb-2">11. Pagos con transferencia</h3>
               <p className="text-gray-700">
-                El participante tendrá una hora solamente para realizar el pago y el envío de los datos de pago al número de WhatsApp de Proyectos Flores una vez realizado el pedido, de no hacerlo en ese tiempo su pedido no será procesado y no se permitirá por ningún término un reembolso.
+                El participante  despues de  realizar el pago tendra que enviar los datos de pago o la captura  al número de WhatsApp de EventosIB.com una vez realizado el pedido, de no hacerlo en ese tiempo su pedido no será procesado.
               </p>
             </div>
           </div>
           <div className="flex justify-center pt-4 border-t">
-          <Button
-            onClick={() => setOpen(false)}
-            className="bg-blue-700 hover:bg-blue-600 text-white px-8"
-          >
-            Entendido
-          </Button>
-        </div>
-        </ScrollArea>  
+            <Button
+              onClick={() => setOpen(false)}
+              className="bg-blue-700 hover:bg-blue-600 text-white px-8"
+            >
+              Entendido
+            </Button>
+          </div>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );
