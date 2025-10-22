@@ -69,7 +69,7 @@ export const DialogTerminosyCondiciones = () => {
             <div>
               <h3 className="font-semibold text-base mb-2">5. Notificación al Ganador</h3>
               <p className="text-gray-700">
-                Nos pondremos en contacto con el ganador a través de los datos proporcionados al participar en el sorteo. Los resultados serán publicados en las redes y medios participantes.
+                Nos pondremos en contacto con el ganador a través de los datos proporcionados al participar en el sorteo ya sea por WhatsApp o correo electrónico. Los resultados serán publicados en las redes y medios participantes.
               </p>
             </div>
 
