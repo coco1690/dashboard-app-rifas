@@ -1,6 +1,5 @@
 import { lazy } from "react";
 import { createBrowserRouter, Navigate } from "react-router";
-
 import { SinglePageLayout } from "./single_page/layouts/SinglePageLayout";
 import { InicioPage } from "./single_page/pages/inicio/InicioPage";
 import { RifasPage } from "./single_page/pages/rifas/RifasPage";
@@ -16,10 +15,8 @@ import { ProtectedRoute } from "./components/routes/ProtectedRoute";
 import AgencyLayout from "./agency/layouts/AgencyLayout";
 import { DashboardAgencyPage } from "./agency/pages/dashboard/DashboardAgencyPage";
 import { AgencyClientsPage } from "./agency/pages/clients/AgencyClientsPage";
-
 import { AdminViewAgencyIdPage } from "./admin/pages/agencias/pages/AdminViewAgencyIdPage";
 import { AdminRifasIdPage } from "./admin/pages/rifas/page/AdminRifasIdPage";
-import { RecargarBoletosForm } from "./admin/pages/recargas/recargarBoletosForm";
 import { AgencyVentasPage } from "./agency/pages/ventas/AgencyVentasPage";
 import {  AgencyHistorialPage } from "./agency/pages/historial/AgencyHistorialPage";
 import { AgencyOrders } from "./agency/pages/ordenes/AgencyOrders";
@@ -28,6 +25,7 @@ import { AdminHistorialVentas } from "./admin/pages/historial/AdminHistorialVent
 import NewClientePage from "./agency/pages/clients/NewClientePage";
 import CrearAgenciasPage from "./admin/pages/crear_agencias/CrearAgenciasPage";
 import { DialogTerminosyCondiciones } from "./single_page/components/DialogTerminosyCondiciones";
+import { RecargaBoletosPage } from "./admin/pages/recargas/RecargaBoletosPage";
 
 
 
@@ -128,7 +126,7 @@ export const appRouter = createBrowserRouter([
             },
             {
                 path: 'recargas',
-                element: <RecargarBoletosForm />
+                element: <RecargaBoletosPage />
             },
             {
                 path: 'ordenes',
