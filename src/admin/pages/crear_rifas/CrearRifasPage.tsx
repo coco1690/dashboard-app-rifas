@@ -1,4 +1,5 @@
-import { useState } from "react"
+
+import { useState, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -11,10 +12,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Upload, X } from "lucide-react"
+import { Upload, X, AlertCircle } from "lucide-react"
 import { useRifaStore } from "@/stores/rifaStore"
 import { useAuthStore } from "@/stores/authStore"
 import { useNavigate } from "react-router"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 
 
 interface FormData {
@@ -52,9 +54,11 @@ export const CrearRifasPage = () => {
 
   const [selectedFiles, setSelectedFiles] = useState<File[]>([])
   const [imagePreviews, setImagePreviews] = useState<string[]>([])
+  const [showValidationAlert, setShowValidationAlert] = useState(false)
 
   const handleChange = (field: keyof FormData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }))
+    setShowValidationAlert(false)
   }
 
   const resetForm = () => {
@@ -72,6 +76,7 @@ export const CrearRifasPage = () => {
     })
     setSelectedFiles([])
     setImagePreviews([])
+    setShowValidationAlert(false)
   }
 
   // Función para manejar la selección de archivos
@@ -112,6 +117,7 @@ export const CrearRifasPage = () => {
         if (loadedCount === validFiles.length) {
           setSelectedFiles(prev => [...prev, ...validFiles])
           setImagePreviews(prev => [...prev, ...newPreviews])
+          setShowValidationAlert(false)
         }
       }
       reader.readAsDataURL(file)
@@ -126,32 +132,34 @@ export const CrearRifasPage = () => {
     setImagePreviews(prev => prev.filter((_, i) => i !== index))
   }
 
+  // Validación de campos requeridos y obtener lista de campos faltantes
+  const validationResult = useMemo(() => {
+    const missingFields: string[] = []
+
+    if (!formData.titulo.trim()) missingFields.push("Título")
+    if (!formData.estado) missingFields.push("Estado")
+    if (!formData.loteria.trim()) missingFields.push("Lotería")
+    if (!formData.precio_boleta || parseFloat(formData.precio_boleta) <= 0) missingFields.push("Precio por boleta")
+    if (!formData.digitos) missingFields.push("Dígitos")
+    if (selectedFiles.length === 0) missingFields.push("Al menos una imagen")
+    
+    // Validación de números
+    if (parseInt(formData.numero_inicial) >= parseInt(formData.numero_final)) {
+      missingFields.push("Número final debe ser mayor al inicial")
+    }
+
+    return {
+      isValid: missingFields.length === 0,
+      missingFields
+    }
+  }, [formData, selectedFiles])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    // Validaciones básicas
-    if (!formData.titulo.trim()) {
-      alert("El título es obligatorio")
-      return
-    }
-
-    if (!formData.estado) {
-      alert("Debe seleccionar un estado")
-      return
-    }
-
-    if (!formData.loteria) {
-      alert("Debes ingresar la lotería")
-      return
-    }
-
-    if (!formData.precio_boleta || parseFloat(formData.precio_boleta) <= 0) {
-      alert("El precio debe ser mayor a 0")
-      return
-    }
-
-    if (parseInt(formData.numero_inicial) >= parseInt(formData.numero_final)) {
-      alert("El número final debe ser mayor al inicial")
+    // Mostrar alerta si hay campos faltantes
+    if (!validationResult.isValid) {
+      setShowValidationAlert(true)
       return
     }
 
@@ -223,6 +231,21 @@ export const CrearRifasPage = () => {
             </div>
           )}
 
+          {/* Alerta de validación */}
+          {showValidationAlert && !validationResult.isValid && (
+            <Alert variant="destructive" className="mb-4">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                <p className="font-semibold mb-2">Por favor completa los siguientes campos requeridos:</p>
+                <ul className="list-disc list-inside space-y-1">
+                  {validationResult.missingFields.map((field, index) => (
+                    <li key={index}>{field}</li>
+                  ))}
+                </ul>
+              </AlertDescription>
+            </Alert>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-4">
 
             {/* Título y Subtítulo */}
@@ -234,7 +257,7 @@ export const CrearRifasPage = () => {
                   placeholder="Ej: iPhone 15 Pro Max"
                   value={formData.titulo}
                   onChange={(e) => handleChange('titulo', e.target.value)}
-                  required
+                  className={!formData.titulo.trim() && showValidationAlert ? "border-red-500" : ""}
                 />
               </div>
 
@@ -265,8 +288,11 @@ export const CrearRifasPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <Label>Estado *</Label>
-                <Select value={formData.estado} onValueChange={(value) => handleChange('estado', value)}>
-                  <SelectTrigger>
+                <Select 
+                  value={formData.estado} 
+                  onValueChange={(value) => handleChange('estado', value)}
+                >
+                  <SelectTrigger className={!formData.estado && showValidationAlert ? "border-red-500" : ""}>
                     <SelectValue placeholder="Seleccionar estado" />
                   </SelectTrigger>
                   <SelectContent>
@@ -278,12 +304,14 @@ export const CrearRifasPage = () => {
                 </Select>
               </div>
               <div>
-                <Label htmlFor="fecha_fin">Loteria *</Label>
+                <Label htmlFor="loteria">Lotería *</Label>
                 <Input
                   id="loteria"
                   type="text"
+                  placeholder="Ej: Lotería Nacional"
                   value={formData.loteria}
                   onChange={(e) => handleChange('loteria', e.target.value)}
+                  className={!formData.loteria.trim() && showValidationAlert ? "border-red-500" : ""}
                 />
               </div>
               <div>
@@ -331,7 +359,7 @@ export const CrearRifasPage = () => {
                   placeholder="0.00"
                   value={formData.precio_boleta}
                   onChange={(e) => handleChange('precio_boleta', e.target.value)}
-                  required
+                  className={(!formData.precio_boleta || parseFloat(formData.precio_boleta) <= 0) && showValidationAlert ? "border-red-500" : ""}
                 />
               </div>
 
@@ -341,7 +369,7 @@ export const CrearRifasPage = () => {
                   value={formData.digitos}
                   onValueChange={(value) => handleChange("digitos", value)}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className={!formData.digitos && showValidationAlert ? "border-red-500" : ""}>
                     <SelectValue placeholder="Selecciona dígitos" />
                   </SelectTrigger>
                   <SelectContent>
@@ -361,16 +389,18 @@ export const CrearRifasPage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                   <div>Total de boletas: <span className="font-bold">{totalBoletas().toLocaleString()}</span></div>
                   <div>Valor total: <span className="font-bold text-green-600">${valorTotal().toFixed(2)}</span></div>
-                  <div>Imágenes: <span className="font-bold">{selectedFiles.length}/5</span></div>
+                  <div>Imágenes: <span className={`font-bold ${selectedFiles.length === 0 ? 'text-red-600' : ''}`}>{selectedFiles.length}/5 {selectedFiles.length === 0 && '*'}</span></div>
                 </div>
               </div>
             )}
 
             {/* Subida de imágenes */}
             <div className="space-y-4">
-              <Label>Imágenes del Premio (Máximo 5 imágenes)</Label>
+              <Label>Imágenes del Premio * (Máximo 5 imágenes)</Label>
 
-              <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
+              <div className={`border-2 border-dashed rounded-lg p-6 text-center hover:border-blue-400 transition-colors ${
+                selectedFiles.length === 0 && showValidationAlert ? 'border-red-500' : 'border-gray-300'
+              }`}>
                 <input
                   type="file"
                   multiple
@@ -381,13 +411,13 @@ export const CrearRifasPage = () => {
                   disabled={selectedFiles.length >= 5 || isProcessing}
                 />
                 <label htmlFor="imageUpload" className="cursor-pointer">
-                  <Upload className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                  <Upload className={`mx-auto h-12 w-12 mb-4 ${selectedFiles.length === 0 && showValidationAlert ? 'text-red-400' : 'text-gray-400'}`} />
                   <p className="text-lg font-medium text-gray-700">
                     {selectedFiles.length >= 5 ? "Máximo alcanzado" : "Seleccionar imágenes"}
                   </p>
                   <p className="text-sm text-gray-500 mt-2">JPG, PNG, WEBP (máx. 5MB cada una)</p>
-                  <p className="text-xs text-gray-400 mt-1">
-                    {selectedFiles.length}/5 imágenes seleccionadas
+                  <p className={`text-xs mt-1 ${selectedFiles.length === 0 && showValidationAlert ? 'text-red-500 font-semibold' : 'text-gray-400'}`}>
+                    {selectedFiles.length}/5 imágenes seleccionadas {selectedFiles.length === 0 && '(Requerido)'}
                   </p>
                 </label>
               </div>
@@ -424,22 +454,30 @@ export const CrearRifasPage = () => {
                 variant="outline"
                 onClick={resetForm}
                 disabled={isProcessing}
-                className="flex-1  bg-blue-400 hover:bg-blue-600 cursor-pointer"
+                className="flex-1 bg-blue-400 hover:bg-blue-600 cursor-pointer"
               >
                 Limpiar
               </Button>
               <Button
                 type="submit"
-                disabled={isProcessing}
-                className="flex-1  bg-blue-400 hover:bg-blue-600  cursor-pointer"
+                disabled={!validationResult.isValid || isProcessing}
+                className={`flex-1 cursor-pointer ${
+                  !validationResult.isValid ? 'bg-gray-400 hover:bg-gray-400' : 'bg-blue-400 hover:bg-blue-600'
+                }`}
               >
                 {uploadingImages ? "Subiendo imágenes..." : loading ? "Creando rifa..." : "Crear Rifa"}
               </Button>
             </div>
+
+            {/* Mensaje informativo cuando el botón está deshabilitado */}
+            {!validationResult.isValid && !showValidationAlert && (
+              <p className="text-sm text-gray-500 text-center">
+                Completa todos los campos requeridos (*) para crear la rifa
+              </p>
+            )}
           </form>
         </CardContent>
       </Card>
     </div>
   )
 }
-

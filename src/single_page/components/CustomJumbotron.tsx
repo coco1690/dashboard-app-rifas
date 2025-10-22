@@ -18,7 +18,7 @@ interface Props {
   precio?: number
   estado?: string
   fechaSorteo?: string
-  loteria?: string
+  // loteria?: string
 }
 
 export const CustomJumbotron = ({
@@ -31,7 +31,7 @@ export const CustomJumbotron = ({
   precio,
   estado,
   // fechaSorteo,
-  loteria,
+  // loteria,
 }: Props) => {
   const plugin = useRef(
     Autoplay({ delay: 4000, stopOnInteraction: true })
@@ -70,14 +70,14 @@ export const CustomJumbotron = ({
             </h1>
 
             {/* Información del sorteo */}
-            {loteria && (
+            {/* {loteria && (
               <div className="space-y-1">
-                {/* <p className="text-lg">
+                <p className="text-lg">
                   <span className="font-semibold">Juega el:</span> {formatearFecha(fechaSorteo)}
-                </p> */}
+                </p>
                 <p className="text-gray-300 text-lg ">Con la Lotería {loteria}</p>
               </div>
-            )}
+            )} */}
 
             {/* Precio */}
             {precio && (
