@@ -42,7 +42,7 @@ export const CustomComoFiunciona = () => {
               <h3 className="text-lg font-medium text-gray-400 leading-relaxed">
                 El ganador se elegirá según las cifras<br />
                 de los últimos números de Premio<br />
-                mayor de la Lotería Nacional.
+                mayor de la L Nacional.
               </h3>
             </div>
           </div>

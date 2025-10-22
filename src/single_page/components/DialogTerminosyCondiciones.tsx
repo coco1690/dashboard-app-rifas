@@ -53,7 +53,7 @@ export const DialogTerminosyCondiciones = () => {
             <div>
               <h3 className="font-semibold text-base mb-2">3. Selección del Ganador</h3>
               <p className="text-gray-700">
-                El ganador será determinado en base a las últimas cifras del resultado de la lotería nacional.
+                El ganador será determinado en base a las últimas cifras del resultado de la L Nacional.
               </p>
             </div>
 

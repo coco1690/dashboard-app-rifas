@@ -27,23 +27,23 @@ export const CustomProgressBar = ({ totalBoletos, vendidos, rifaDescription }: E
 
         {/* Progress Stats */}
         <div className="bg-white rounded-xl border border-slate-200/80 p-6 mb-6 shadow-sm">
-          <div className="flex items-center justify-between mb-4">
-            <div className="text-left">
-              <p className="text-sm font-medium text-slate-500 uppercase tracking-wide mb-1">
+          <div className="flex items-center justify-center mb-4 w-full">
+            <div className="text-center">
+              <p className="text-sm font-bold font-montserrat text-slate-500 tracking-wide mb-1">
                 Progreso de Venta
               </p>
               <p className="text-3xl font-bold text-slate-800">
                 {porcentajeVendido}%
               </p>
             </div>
-            <div className="text-right">
+            {/* <div className="text-right">
               <p className="text-sm font-medium text-slate-500 uppercase tracking-wide mb-1">
                 Boletos Vendidos
               </p>
               <p className="text-2xl font-semibold text-slate-700">
                 {vendidos.toLocaleString()} / {totalBoletos.toLocaleString()}
               </p>
-            </div>
+            </div> */}
           </div>
 
           {/* Enhanced Progress Bar */}
