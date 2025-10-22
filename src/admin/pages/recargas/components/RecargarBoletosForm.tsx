@@ -20,8 +20,6 @@ import { useAuthStore } from '@/stores/authStore'
 import { useRecargaStore } from '@/stores/useRecargaStore'
 import { useUserListStore } from '@/stores/userListStore'
 import { Loader2, Send, AlertTriangle, Users, Ticket, CheckCircle } from 'lucide-react'
-import { HistorialRecargas } from './components/HistorialRecargas'
-
 
 interface FormData {
   agenciaId: string
@@ -97,6 +95,12 @@ export const RecargarBoletosForm = () => {
       setShowValidationDialog(true)
       return
     }
+
+    if (cantidad > 500) {
+      setValidationMessage('La cantidad máxima de boletos a recargar es 500')
+      setShowValidationDialog(true)
+      return
+    }
     
     if (!user?.id) {
       setValidationMessage('No se encontró información del administrador')
@@ -126,10 +130,12 @@ export const RecargarBoletosForm = () => {
   const rifasActivas = rifas.filter(r => r.estado === 'activa' || r.estado === 'creada')
   const rifaSeleccionada = rifas.find(r => r.id === formData.rifaId)
   const agenciasDisponibles = agencias.filter(agencia => agencia.user.user_type === 'agencia')
+  
+  // Validación de cantidad
+  const cantidadValida = formData.cantidad && parseInt(formData.cantidad) > 0 && parseInt(formData.cantidad) <= 500
 
   return (
-    <div className="space-y-6">
-      {/* Formulario de recarga */}
+    <>
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -150,18 +156,21 @@ export const RecargarBoletosForm = () => {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Selección de agencia */}
-              <div>
+              <div className="space-y-2">
                 <Label htmlFor="agencia">Agencia *</Label>
-                <Select value={formData.agenciaId} onValueChange={(value) => handleInputChange('agenciaId', value)}>
-                  <SelectTrigger>
+                <Select 
+                  value={formData.agenciaId} 
+                  onValueChange={(value) => handleInputChange('agenciaId', value)}
+                >
+                  <SelectTrigger id="agencia" className="w-full">
                     <SelectValue placeholder={loadingAgencias ? "Cargando..." : "Seleccionar agencia"} />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="max-w-[calc(100vw-2rem)] sm:max-w-md">
                     {agenciasDisponibles.map((agencia) => (
-                      <SelectItem key={agencia.user_id} value={agencia.user_id}>
-                        <div className="flex items-center gap-2">
-                          <Users className="h-4 w-4" />
-                          {agencia.user.nombre}
+                      <SelectItem key={agencia.user_id} value={agencia.user_id} className="max-w-full">
+                        <div className="flex items-center gap-2 w-full overflow-hidden">
+                          <Users className="h-4 w-4 flex-shrink-0" />
+                          <span className="truncate">{agencia.user.nombre}</span>
                         </div>
                       </SelectItem>
                     ))}
@@ -170,19 +179,25 @@ export const RecargarBoletosForm = () => {
               </div>
 
               {/* Selección de rifa */}
-              <div>
+              <div className="space-y-2">
                 <Label htmlFor="rifa">Rifa *</Label>
-                <Select value={formData.rifaId} onValueChange={(value) => handleInputChange('rifaId', value)}>
-                  <SelectTrigger>
+                <Select 
+                  value={formData.rifaId} 
+                  onValueChange={(value) => handleInputChange('rifaId', value)}
+                >
+                  <SelectTrigger id="rifa" className="w-full">
                     <SelectValue placeholder="Seleccionar rifa" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="max-w-[calc(100vw-2rem)] sm:max-w-md">
                     {rifasActivas.map((rifa) => (
-                      <SelectItem key={rifa.id} value={rifa.id}>
-                        <div className="flex items-center gap-2">
-                          <Ticket className="h-4 w-4" />
-                          {rifa.titulo}
-                          <Badge variant={rifa.estado === 'activa' ? 'default' : 'secondary'} className="ml-2">
+                      <SelectItem key={rifa.id} value={rifa.id} className="max-w-full">
+                        <div className="flex items-center gap-2 w-full overflow-hidden">
+                          <Ticket className="h-4 w-4 flex-shrink-0" />
+                          <span className="truncate flex-1 min-w-0">{rifa.titulo}</span>
+                          <Badge 
+                            variant={rifa.estado === 'activa' ? 'default' : 'secondary'} 
+                            className="flex-shrink-0 text-xs"
+                          >
                             {rifa.estado}
                           </Badge>
                         </div>
@@ -194,27 +209,38 @@ export const RecargarBoletosForm = () => {
             </div>
 
             {/* Cantidad de boletos */}
-            <div>
+            <div className="space-y-2">
               <Label htmlFor="cantidad">Cantidad de Boletos *</Label>
               <Input
                 id="cantidad"
+                name="cantidad"
                 type="number"
                 min="1"
+                max="500"
+                autoComplete="off"
                 placeholder="Ej: 100"
                 value={formData.cantidad}
                 onChange={(e) => handleInputChange('cantidad', e.target.value)}
+                className={parseInt(formData.cantidad) > 500 ? 'border-red-500' : ''}
                 required
               />
+              {parseInt(formData.cantidad) > 500 && (
+                <p className="text-sm text-red-600 flex items-center gap-1">
+                  <AlertTriangle className="h-4 w-4" />
+                  La cantidad máxima es 500 boletos
+                </p>
+              )}
+              <p className="text-xs text-gray-500">Máximo: 500 boletos por recarga</p>
             </div>
 
             {/* Información de la rifa seleccionada */}
             {rifaSeleccionada && (
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <h4 className="font-medium text-blue-800 mb-2">Información de la Rifa</h4>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                   <div>
                     <span className="text-blue-700">Título:</span>
-                    <div className="font-medium">{rifaSeleccionada.titulo}</div>
+                    <div className="font-medium truncate">{rifaSeleccionada.titulo}</div>
                   </div>
                   <div>
                     <span className="text-blue-700">Precio por boleto:</span>
@@ -231,7 +257,7 @@ export const RecargarBoletosForm = () => {
                     </Badge>
                   </div>
                 </div>
-                {formData.cantidad && (
+                {formData.cantidad && cantidadValida && (
                   <div className="mt-3 pt-3 border-t border-blue-200">
                     <span className="text-blue-700">Valor total de la recarga:</span>
                     <div className="text-lg font-bold text-green-600">
@@ -245,7 +271,7 @@ export const RecargarBoletosForm = () => {
             {/* Botón de envío */}
             <Button 
               type="submit" 
-              disabled={loading || !formData.agenciaId || !formData.rifaId || !formData.cantidad}
+              disabled={loading || !formData.agenciaId || !formData.rifaId || !cantidadValida}
               className="w-full"
             >
               {loading ? (
@@ -264,18 +290,15 @@ export const RecargarBoletosForm = () => {
         </CardContent>
       </Card>
 
-      {/* Componente del historial de recargas */}
-      <HistorialRecargas />
-
       {/* Diálogos */}
       <AlertDialog open={showValidationDialog} onOpenChange={setShowValidationDialog}>
-        <AlertDialogContent>
+        <AlertDialogContent className="max-w-[90vw] sm:max-w-lg">
           <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2">
+            <AlertDialogTitle className="flex items-center gap-2 text-base sm:text-lg">
               <AlertTriangle className="h-5 w-5 text-red-500" />
               Error de Validación
             </AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogDescription className="text-sm">
               {validationMessage}
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -288,13 +311,13 @@ export const RecargarBoletosForm = () => {
       </AlertDialog>
 
       <AlertDialog open={showSuccessDialog} onOpenChange={setShowSuccessDialog}>
-        <AlertDialogContent>
+        <AlertDialogContent className="max-w-[90vw] sm:max-w-lg">
           <AlertDialogHeader>
-            <AlertDialogTitle className="flex items-center gap-2">
+            <AlertDialogTitle className="flex items-center gap-2 text-base sm:text-lg">
               <CheckCircle className="h-5 w-5 text-green-500" />
               Recarga Exitosa
             </AlertDialogTitle>
-            <AlertDialogDescription>
+            <AlertDialogDescription className="text-sm">
               {successMessage}
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -305,6 +328,6 @@ export const RecargarBoletosForm = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </>
   )
 }
