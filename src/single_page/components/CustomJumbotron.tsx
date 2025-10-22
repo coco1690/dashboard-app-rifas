@@ -46,11 +46,11 @@ export const CustomJumbotron = ({
   // }
 
   return (
-    <section className="bg-gray-800 text-white min-h-[600px] lg:min-h-[700px] flex items-center">
+    <section className="bg-black text-white min-h-[600px] lg:min-h-[700px] flex items-center">
       <div className="container mx-auto px-4 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
 
-          {/* Contenido de texto - Lado izquierdo */}
+          {/* Contenido de texto - Lado derecho */}
           <div className="space-y-6 order-2 lg:order-2">
 
             {/* Badge de estado */}
@@ -130,7 +130,7 @@ export const CustomJumbotron = ({
                   <CarouselContent>
                     {images.map((image, index) => (
                       <CarouselItem key={index}>
-                        <div className="relative w-full h-[300px] md:h-[400px] lg:h-[500px] rounded-lg overflow-hidden">
+                        <div className="relative w-full h-[430px] md:h-[400px] lg:h-[500px] rounded-lg overflow-hidden">
                           <img
                             src={image}
                             alt={`Premio ${index + 1}`}

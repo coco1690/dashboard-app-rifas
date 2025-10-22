@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button'
 
 export const CustomComoFiunciona = () => {
   return (
-    <section className="py-16 px-4 lg:px-8 bg-gray-800">
+    <section className="py-16 px-4 lg:px-8 bg-black">
       <div className="container mx-auto">
         {/* Título */}
         <div className="text-center mb-16">

@@ -1,6 +1,6 @@
 export const FloatingWhatsAppButton = () => {
   const phoneNumber = "593967032866"; // Cambia por tu número real
-  const message = "Hola! Me interesa participar en los Eventos IB";
+  const message = "Hola! Me interesa participar en los EventosIB";
   
   const handleWhatsAppClick = () => {
     const encodedMessage = encodeURIComponent(message);

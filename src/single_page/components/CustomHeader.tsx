@@ -28,7 +28,7 @@ export const CustomHeader = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full backdrop-blur bg-gray-800">
+    <header className="sticky top-0 z-50 w-full backdrop-blur bg-black">
       <div className="container mx-auto px-4 lg:px-8">
         <div className="flex h-20 items-center justify-between">
           {/* Logo */}
@@ -38,7 +38,7 @@ export const CustomHeader = () => {
           <nav className="hidden md:flex items-center space-x-8">
             <Link 
               to="/" 
-              className={`text-sm font-medium transition-colors hover:text-teal-500 pb-1 border-b-2 text-white ${
+              className={`text-sm font-medium transition-colors hover:text-amber-500 pb-1 border-b-2 text-white ${
                 isActiveLink('/') 
                   ? 'border-amber-400 text-primary' 
                   : 'border-transparent'
@@ -58,7 +58,7 @@ export const CustomHeader = () => {
             </Link> */}
             <Link 
               to="/descargas" 
-              className={`text-sm font-medium transition-colors hover:text-teal-500 pb-1 border-b-2 text-white ${
+              className={`text-sm font-medium transition-colors hover:text-amber-500 pb-1 border-b-2 text-white ${
                 isActiveLink('/descargas') 
                   ? 'border-amber-400 text-primary' 
                   : 'border-transparent'
@@ -79,7 +79,7 @@ export const CustomHeader = () => {
               <Button
                 variant="ghost"
                 size="icon"
-                className={`text-white hover:bg-teal-600 hover:text-white ${
+                className={`text-white hover:bg-amber-400 hover:text-black ${
                   isActiveLink('/descargas') ? 'bg-teal-600' : ''
                 }`}
               >
@@ -135,7 +135,7 @@ export const CustomHeader = () => {
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="text-white hover:bg-teal-600 hover:text-white"
+                  className="text-white hover:bg-amber-400 hover:text-black"
                 >
                   <User className="h-5 w-5" />
                 </Button>

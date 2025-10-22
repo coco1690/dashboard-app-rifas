@@ -82,7 +82,7 @@ export const LoginPage = () => {
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-teal-600 hover:bg-teal-700 text-white cursor-pointer font-montserrat shadow-md">
+                className="w-full bg-amber-500 hover:bg-amber-400 text-black  cursor-pointer font-montserrat shadow-md">
                 {loading ? 'Cargando...' : 'Iniciar Sesión'}
               </Button>
 
@@ -98,7 +98,7 @@ export const LoginPage = () => {
       </Card>
 
       <div className="text-balance text-center text-xs text-muted-foreground [&_a]:underline [&_a]:underline-offset-4 hover:[&_a]:text-primary">
-        Inicianso sesion, estaras de acuerdo con los <a href="#">terminos y condiciones</a> y <a href="#">politicas de uso</a>.
+        Iniciando sesion, estaras de acuerdo con los <a href="#">terminos y condiciones</a> y <a href="#">politicas de uso</a>.
       </div>
     </div>
   )

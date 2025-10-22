@@ -98,7 +98,7 @@ export const RegisterPage = () => {
               <Button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-teal-600 hover:bg-teal-700 text-white cursor-pointer font-montserrat shadow-md">
+                className="w-full bg-amber-500 hover:bg-amber-400 text-black cursor-pointer font-montserrat shadow-md">
                 {loading ? 'Registrando...' : 'Registrarse'}
               </Button>
 
