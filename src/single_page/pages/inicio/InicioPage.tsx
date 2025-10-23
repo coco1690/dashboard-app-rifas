@@ -89,7 +89,7 @@ export const InicioPage = () => {
                     <div className="text-center">
                         <div className="text-4xl mb-4">🎲</div>
                         <h2 className="text-xl font-semibold text-gray-700 mb-2">
-                            {loading ? "Cargando rifa..." : "No hay rifas disponibles"}
+                            {loading ? "Cargando Evento..." : "No hay Eventos disponibles"}
                         </h2>
                         {error && (
                             <p className="text-red-600 text-sm mb-2">{error}</p>
