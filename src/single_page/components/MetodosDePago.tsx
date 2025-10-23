@@ -2,12 +2,12 @@ import { FloatingWhatsAppButton } from "@/components/custom/FloatingWhatsAppButt
 
 export const MetodosDePago = () => {
   const metodosPago = [
-    {
-      nombre: "Bitcoin",
-      logo: "../icons/bitcoin.svg",
-      descripcion: "Pago con Bitcoin",
-      color: "bg-orange-100 text-orange-600 border-orange-200"
-    },
+    // {
+    //   nombre: "Bitcoin",
+    //   logo: "../icons/bitcoin.svg",
+    //   descripcion: "Pago con Bitcoin",
+    //   color: "bg-orange-100 text-orange-600 border-orange-200"
+    // },
     {
       nombre: "USDT",
       logo: "../icons/usdt.svg",
@@ -42,7 +42,7 @@ export const MetodosDePago = () => {
         </div>
 
         {/* Payment Methods Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
           {metodosPago.map((metodo, index) => (
             <div 
               key={index}
