@@ -117,7 +117,7 @@ export const InicioPage = () => {
             />
 
             <NumerosDeLaSuerte
-                emoji="🍀"
+                emoji=""
                 numbers={numeroDeLaSuerte.length > 0 ? numeroDeLaSuerte : ["No hay números de la suerte disponibles."]}
             />
 
