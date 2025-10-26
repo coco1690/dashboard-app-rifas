@@ -11,10 +11,10 @@ export const CustomComoFiunciona = () => {
             COMO FUNCIONA
           </h1>
         </div>
-        
+
         {/* Grid de cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          
+
           {/* Card 1 */}
           <div className="text-center space-y-6">
             <div className="flex justify-center">
@@ -60,12 +60,20 @@ export const CustomComoFiunciona = () => {
                 comunicarán a través de WhatsApp<br />
                 o en nuestra cuenta de Instagram :
               </h3>
-              <Button 
-                variant="outline" 
-                className="border-gray-400 text-gray-700 hover:bg-gray-50 rounded-full px-6 py-2"
+              <Button
+                variant="outline"
+                className="border-gray-400 text-gray-700 hover:bg-gradient-to-r hover:from-purple-500 hover:to-pink-500 hover:text-white hover:border-transparent transition-all duration-300 rounded-full px-6 py-2"
+                asChild
               >
-                <Instagram className="w-4 h-4 mr-2" />
-                EventosIB
+                <a
+                  href="https://www.instagram.com/eventosibcom?igsh=NnI2ZmEzYzg3dGYx"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center"
+                >
+                  <Instagram className="w-4 h-4 mr-2" />
+                  Eventosib.com
+                </a>
               </Button>
             </div>
           </div>
