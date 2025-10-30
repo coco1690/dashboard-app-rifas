@@ -142,7 +142,7 @@ export const CrearRifasPage = () => {
     if (!formData.precio_boleta || parseFloat(formData.precio_boleta) <= 0) missingFields.push("Precio por boleta")
     if (!formData.digitos) missingFields.push("Dígitos")
     if (selectedFiles.length === 0) missingFields.push("Al menos una imagen")
-    
+
     // Validación de números
     if (parseInt(formData.numero_inicial) >= parseInt(formData.numero_final)) {
       missingFields.push("Número final debe ser mayor al inicial")
@@ -287,12 +287,12 @@ export const CrearRifasPage = () => {
             {/* Estado y Fecha  */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <Label>Estado *</Label>
-                <Select 
-                  value={formData.estado} 
+                <Label htmlFor="estado-trigger">Estado *</Label>
+                <Select
+                  value={formData.estado}
                   onValueChange={(value) => handleChange('estado', value)}
                 >
-                  <SelectTrigger className={!formData.estado && showValidationAlert ? "border-red-500" : ""}>
+                  <SelectTrigger id="estado-trigger" className={!formData.estado && showValidationAlert ? "border-red-500" : ""}>
                     <SelectValue placeholder="Seleccionar estado" />
                   </SelectTrigger>
                   <SelectContent>
@@ -364,12 +364,12 @@ export const CrearRifasPage = () => {
               </div>
 
               <div>
-                <Label htmlFor="digitos">Dígitos *</Label>
+                <Label htmlFor="digitos-trigger">Dígitos *</Label>
                 <Select
                   value={formData.digitos}
                   onValueChange={(value) => handleChange("digitos", value)}
                 >
-                  <SelectTrigger className={!formData.digitos && showValidationAlert ? "border-red-500" : ""}>
+                  <SelectTrigger id="digitos-trigger" className={!formData.digitos && showValidationAlert ? "border-red-500" : ""}>
                     <SelectValue placeholder="Selecciona dígitos" />
                   </SelectTrigger>
                   <SelectContent>
@@ -380,6 +380,7 @@ export const CrearRifasPage = () => {
                   </SelectContent>
                 </Select>
               </div>
+
             </div>
 
             {/* Resumen */}
@@ -398,9 +399,8 @@ export const CrearRifasPage = () => {
             <div className="space-y-4">
               <Label>Imágenes del Premio * (Máximo 5 imágenes)</Label>
 
-              <div className={`border-2 border-dashed rounded-lg p-6 text-center hover:border-blue-400 transition-colors ${
-                selectedFiles.length === 0 && showValidationAlert ? 'border-red-500' : 'border-gray-300'
-              }`}>
+              <div className={`border-2 border-dashed rounded-lg p-6 text-center hover:border-blue-400 transition-colors ${selectedFiles.length === 0 && showValidationAlert ? 'border-red-500' : 'border-gray-300'
+                }`}>
                 <input
                   type="file"
                   multiple
@@ -461,9 +461,8 @@ export const CrearRifasPage = () => {
               <Button
                 type="submit"
                 disabled={!validationResult.isValid || isProcessing}
-                className={`flex-1 cursor-pointer ${
-                  !validationResult.isValid ? 'bg-gray-400 hover:bg-gray-400' : 'bg-blue-400 hover:bg-blue-600'
-                }`}
+                className={`flex-1 cursor-pointer ${!validationResult.isValid ? 'bg-gray-400 hover:bg-gray-400' : 'bg-blue-400 hover:bg-blue-600'
+                  }`}
               >
                 {uploadingImages ? "Subiendo imágenes..." : loading ? "Creando rifa..." : "Crear Rifa"}
               </Button>
