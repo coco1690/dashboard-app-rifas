@@ -6,7 +6,7 @@ interface Props{
 
 export const NumeroGanador = ({numberWin}:Props) => {
   return (
-     <section className="py-10 px-4 lg:px-8 bg-black">
+     <section className="py-10 px-4 lg:px-8 bg-gray-900">
         <div className="container mx-auto text-center">
           <h1 className="text-2xl lg:text-2xl font-bold tracking-tight mb-6 text-white">
             Numero ganador:
