@@ -207,7 +207,7 @@ export const CustomHeader = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full backdrop-blur bg-black">
+    <header className="sticky top-0 z-50 w-full backdrop-blur bg-gray-900">
       <div className="container mx-auto px-4 lg:px-8">
         <div className="flex h-16 md:h-20 items-center justify-between">
           {/* IZQUIERDA: Logo (Desktop) y Menú Hamburguesa (Mobile) */}

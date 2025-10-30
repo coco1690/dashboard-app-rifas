@@ -4,7 +4,7 @@ import { Facebook, Instagram, Send } from "lucide-react"
 
 export const CustomFooter = () => {
   return (
-    <footer className="border-t py-12 px-4 lg:px-8 mt-16 bg-black">
+    <footer className="border-t py-12 px-4 lg:px-8 mt-16 bg-gray-900">
       <div className="container mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
