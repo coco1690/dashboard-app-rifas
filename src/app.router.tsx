@@ -26,6 +26,7 @@ import NewClientePage from "./agency/pages/clients/NewClientePage";
 import CrearAgenciasPage from "./admin/pages/crear_agencias/CrearAgenciasPage";
 import { DialogTerminosyCondiciones } from "./single_page/components/DialogTerminosyCondiciones";
 import { RecargaBoletosPage } from "./admin/pages/recargas/RecargaBoletosPage";
+import { CarritoDeComprasPage } from "./single_page/pages/carrito/CarritoDeComprasPage";
 
 
 
@@ -57,6 +58,10 @@ export const appRouter = createBrowserRouter([
             {
                 path: 'terminos_y_condiciones',
                 element: <DialogTerminosyCondiciones />
+            },
+            {
+                path: 'carrito',
+                element: <CarritoDeComprasPage />
             },
 
 
