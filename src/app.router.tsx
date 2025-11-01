@@ -18,7 +18,7 @@ import { AgencyClientsPage } from "./agency/pages/clients/AgencyClientsPage";
 import { AdminViewAgencyIdPage } from "./admin/pages/agencias/pages/AdminViewAgencyIdPage";
 import { AdminRifasIdPage } from "./admin/pages/rifas/page/AdminRifasIdPage";
 import { AgencyVentasPage } from "./agency/pages/ventas/AgencyVentasPage";
-import {  AgencyHistorialPage } from "./agency/pages/historial/AgencyHistorialPage";
+import { AgencyHistorialPage } from "./agency/pages/historial/AgencyHistorialPage";
 import { AgencyOrders } from "./agency/pages/ordenes/AgencyOrders";
 import { AgencyRifasActivas } from "./agency/pages/rifas_activas/AgencyRifasActivas";
 import { AdminHistorialVentas } from "./admin/pages/historial/AdminHistorialVentas";
@@ -27,6 +27,7 @@ import CrearAgenciasPage from "./admin/pages/crear_agencias/CrearAgenciasPage";
 import { DialogTerminosyCondiciones } from "./single_page/components/DialogTerminosyCondiciones";
 import { RecargaBoletosPage } from "./admin/pages/recargas/RecargaBoletosPage";
 import { CarritoDeComprasPage } from "./single_page/pages/carrito/CarritoDeComprasPage";
+import { AdminRifasEditPage } from "./admin/pages/rifas/page/AdminRifasEditPage";
 
 
 
@@ -117,6 +118,12 @@ export const appRouter = createBrowserRouter([
                 path: 'admin_rifas/:id',
                 element: <AdminRifasIdPage />
             },
+
+            {
+                path: 'admin_rifas/edit/:id',
+                element: <AdminRifasEditPage />
+            },
+            
             {
                 path: 'admin_agencias/new_agencia',
                 element: <CrearAgenciasPage />
@@ -158,15 +165,15 @@ export const appRouter = createBrowserRouter([
                 index: true,
                 element: <DashboardAgencyPage />
             },
-             {
+            {
                 path: 'clients',
                 element: <AgencyClientsPage />
             },
-             {
+            {
                 path: 'clients/new_client',
                 element: <NewClientePage />
             },
-             {
+            {
                 path: 'rifas_activas',
                 element: <AgencyRifasActivas />
             },
