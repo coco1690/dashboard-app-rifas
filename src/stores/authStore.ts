@@ -189,67 +189,184 @@ export const useAuthStore = create<AuthState>()(
 
                 set({ user: data, isSessionChecked: true })
             },
-            
+
+            // signInWithPassword: async (email, password) => {
+            //     set({ loading: true, error: null })
+
+            //     // Primero verificar si existe en nuestra tabla users
+            //     const { data: userData, error: userError } = await supabase
+            //         .from('users')
+            //         .select('*')
+            //         .eq('email', email)
+            //         .single()
+
+            //     if (userError || !userData) {
+            //         set({ loading: false, error: 'Usuario no encontrado' })
+            //         toast.error('Usuario no encontrado')
+            //         throw new Error('Usuario no encontrado')
+            //     }
+
+            //     // Verificar contraseña con bcrypt
+            //     const passwordMatch = await bcrypt.compare(password, userData.password)
+
+            //     if (!passwordMatch) {
+            //         set({ loading: false, error: 'Contraseña incorrecta' })
+            //         toast.error('Contraseña incorrecta')
+            //         throw new Error('Contraseña incorrecta')
+            //     }
+
+            //     // Validar si es agencia verificada
+            //     if (userData.user_type === 'agencia') {
+            //         const { data: agenciaData } = await supabase
+            //             .from('agencias')
+            //             .select('is_verified')
+            //             .eq('user_id', userData.id)
+            //             .single()
+
+            //         if (!agenciaData?.is_verified) {
+            //             set({ loading: false, error: 'Cuenta no verificada' })
+            //             toast.error('Cuenta no verificada', {
+            //                 description: 'Tu cuenta aún no ha sido verificada'
+            //             })
+            //             throw new Error('Cuenta no verificada')
+            //         }
+            //     }
+
+            //     // Intentar login en Supabase Auth, si falla crear la cuenta
+            //     let authResult = await supabase.auth.signInWithPassword({ email, password })
+
+            //     if (authResult.error) {
+            //         // Si no existe en Auth, crearlo
+            //         const signUpResult = await supabase.auth.signUp({ email, password })
+            //         if (signUpResult.error) {
+            //             set({ loading: false, error: 'Error de autenticación' })
+            //             throw new Error('Error de autenticación')
+            //         }
+            //     }
+
+            //     const user = userData as User
+            //     set({ user, loading: false })
+            //     toast.success('¡Bienvenido!', { description: `Hola ${user.nombre}` })
+            //     return user
+            // },
+
             signInWithPassword: async (email, password) => {
                 set({ loading: true, error: null })
 
-                // Primero verificar si existe en nuestra tabla users
-                const { data: userData, error: userError } = await supabase
-                    .from('users')
-                    .select('*')
-                    .eq('email', email)
-                    .single()
-
-                if (userError || !userData) {
-                    set({ loading: false, error: 'Usuario no encontrado' })
-                    toast.error('Usuario no encontrado')
-                    throw new Error('Usuario no encontrado')
-                }
-
-                // Verificar contraseña con bcrypt
-                const passwordMatch = await bcrypt.compare(password, userData.password)
-
-                if (!passwordMatch) {
-                    set({ loading: false, error: 'Contraseña incorrecta' })
-                    toast.error('Contraseña incorrecta')
-                    throw new Error('Contraseña incorrecta')
-                }
-
-                // Validar si es agencia verificada
-                if (userData.user_type === 'agencia') {
-                    const { data: agenciaData } = await supabase
-                        .from('agencias')
-                        .select('is_verified')
-                        .eq('user_id', userData.id)
+                try {
+                    // 1. Buscar usuario en TU tabla users
+                    const { data: userData, error: userError } = await supabase
+                        .from('users')
+                        .select('*')
+                        .eq('email', email)
                         .single()
 
-                    if (!agenciaData?.is_verified) {
-                        set({ loading: false, error: 'Cuenta no verificada' })
-                        toast.error('Cuenta no verificada', {
-                            description: 'Tu cuenta aún no ha sido verificada'
+                    if (userError || !userData) {
+                        set({ loading: false, error: 'Usuario no encontrado' })
+                        toast.error('Usuario no encontrado')
+                        throw new Error('Usuario no encontrado')
+                    }
+
+                    // 2. Verificar contraseña con bcrypt
+                    const passwordMatch = await bcrypt.compare(password, userData.password)
+
+                    if (!passwordMatch) {
+                        set({ loading: false, error: 'Contraseña incorrecta' })
+                        toast.error('Contraseña incorrecta')
+                        throw new Error('Contraseña incorrecta')
+                    }
+
+                    // 3. Validar si es agencia verificada
+                    if (userData.user_type === 'agencia') {
+                        const { data: agenciaData } = await supabase
+                            .from('agencias')
+                            .select('is_verified')
+                            .eq('user_id', userData.id)
+                            .single()
+
+                        if (!agenciaData?.is_verified) {
+                            set({ loading: false, error: 'Cuenta no verificada' })
+                            toast.error('Cuenta no verificada', {
+                                description: 'Tu cuenta aún no ha sido verificada'
+                            })
+                            throw new Error('Cuenta no verificada')
+                        }
+                    }
+
+                    // 4. ✅ Intentar crear sesión en Supabase Auth
+                    // Esto es opcional pero útil para Row Level Security
+                    try {
+                        console.log('🔐 Intentando login en Supabase Auth...')
+
+                        // Primero intentar login normal
+                        const { error: signInError } = await supabase.auth.signInWithPassword({
+                            email,
+                            password
                         })
-                        throw new Error('Cuenta no verificada')
+
+                        if (signInError) {
+                            // Si falla el login, puede ser porque:
+                            // A) El usuario no existe en Auth
+                            // B) La contraseña en Auth es diferente
+
+                            console.log('⚠️ No existe en Auth o contraseña diferente, intentando crear/actualizar...')
+
+                            // Intentar crear el usuario en Auth
+                            const { error: signUpError } = await supabase.auth.signUp({
+                                email,
+                                password,
+                                options: {
+                                    emailRedirectTo: undefined,
+                                    data: {
+                                        user_type: userData.user_type,
+                                        user_id: userData.id
+                                    }
+                                }
+                            })
+
+                            if (signUpError) {
+                                // Si el error es "User already registered", intentar login de nuevo
+                                if (signUpError.message.includes('already registered') ||
+                                    signUpError.message.includes('already been registered')) {
+                                    console.log('✅ Usuario existe en Auth, contraseña podría estar desincronizada')
+                                    // No es crítico, continuar con el login
+                                } else {
+                                    console.warn('⚠️ Error en signUp de Auth:', signUpError.message)
+                                    // Tampoco es crítico, continuar
+                                }
+                            } else {
+                                console.log('✅ Usuario creado en Supabase Auth')
+                                // Ahora intentar login
+                                await supabase.auth.signInWithPassword({ email, password })
+                            }
+                        } else {
+                            console.log('✅ Login exitoso en Supabase Auth')
+                        }
+                    } catch (authError) {
+                        // Si falla todo el proceso de Auth, NO es crítico
+                        // Tu sistema funciona sin Supabase Auth
+                        console.warn('⚠️ No se pudo sincronizar con Supabase Auth:', authError)
+                        console.log('ℹ️ El login continuará normalmente usando tu tabla users')
                     }
+
+                    // 5. ✅ Establecer usuario en el estado
+                    const user = userData as User
+                    set({ user, loading: false })
+
+                    toast.success('¡Bienvenido!', {
+                        description: `Hola ${user.nombre}`
+                    })
+
+                    console.log('🙋‍♂️ Usuario autenticado:', user)
+                    return user
+
+                } catch (err) {
+                    const errorMessage = err instanceof Error ? err.message : 'Error de autenticación'
+                    set({ loading: false, error: errorMessage })
+                    throw err
                 }
-
-                // Intentar login en Supabase Auth, si falla crear la cuenta
-                let authResult = await supabase.auth.signInWithPassword({ email, password })
-
-                if (authResult.error) {
-                    // Si no existe en Auth, crearlo
-                    const signUpResult = await supabase.auth.signUp({ email, password })
-                    if (signUpResult.error) {
-                        set({ loading: false, error: 'Error de autenticación' })
-                        throw new Error('Error de autenticación')
-                    }
-                }
-
-                const user = userData as User
-                set({ user, loading: false })
-                toast.success('¡Bienvenido!', { description: `Hola ${user.nombre}` })
-                return user
             },
-
+            
             signUp: async (documento_identidad, nombre, phone, email, password, userType = 'cliente') => {
                 set({ loading: true, error: null });
 
