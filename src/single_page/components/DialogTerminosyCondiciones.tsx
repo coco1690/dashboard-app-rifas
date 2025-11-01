@@ -45,7 +45,7 @@ export const DialogTerminosyCondiciones = () => {
             <div>
               <h3 className="font-semibold text-base mb-2">2. Elegibilidad</h3>
               <p className="text-gray-700">
-                El sorteo está abierto a cualquier persona sin restricción de edad.
+                Solo se le vendera a mayores de edad (18 años o más)
               </p>
             </div>
 
@@ -82,54 +82,54 @@ export const DialogTerminosyCondiciones = () => {
             </div>
 
             {/* Sección 7 */}
-            <div>
+            {/* <div>
               <h3 className="font-semibold text-base mb-2">7. Condiciones Generales</h3>
               <p className="text-gray-700">
                 Deben venderse todos los números participantes para poder realizar el sorteo.
               </p>
-            </div>
+            </div> */}
 
-            {/* Sección 8 */}
+            {/* Sección 7 */}
             <div>
-              <h3 className="font-semibold text-base mb-2">8. Premio</h3>
+              <h3 className="font-semibold text-base mb-2">7. Premio</h3>
               <p className="text-gray-700 mb-3">
                 Los ganadores deben seguir nuestras redes sociales indicadas para el sorteo y demostrar que tienen el número ganador y que la ID orden sean la correcta.
               </p>
 
-              {/* Subsección 8.1 */}
+              {/* Subsección 7.1 */}
               <div className="ml-4 mb-3">
-                <h4 className="font-semibold text-sm mb-2">8.1 Premio mayor</h4>
+                <h4 className="font-semibold text-sm mb-2">7.1 Premio mayor</h4>
                 <p className="text-gray-700">
                   El premio será entregado personalmente en la ciudad del ganador, se aplicarán restricciones. El ganador estará dispuesto y acepta ser grabado en video al momento de la entrega del premio.
                 </p>
               </div>
 
-              {/* Subsección 8.2 */}
+              {/* Subsección 7.2 */}
               <div className="ml-4">
-                <h4 className="font-semibold text-sm mb-2">8.2 Premios económicos o especiales</h4>
+                <h4 className="font-semibold text-sm mb-2">7.2 Premios económicos o especiales</h4>
                 <p className="text-gray-700 mb-3">
                   Serán entregados inmediatamente al ganador del número acertante vía transferencia, efectivo o a su vez físicamente de ser el caso, una vez sea verificado y corroborado por los técnicos.
                 </p>
 
-                {/* Subsección 8.2.1 */}
+                {/* Subsección 7.2.1 */}
                 <div className="ml-4 mb-3">
-                  <h5 className="font-semibold text-sm mb-2">8.2.1</h5>
+                  <h5 className="font-semibold text-sm mb-2">7.2.1</h5>
                   <p className="text-gray-700">
                     El ganador del premio especial deberá enviar un video mencionando a EventosIB.com, en el debe mencionar el sorteo, el premio y enseñar el número con el que fue ganador.
                   </p>
                 </div>
 
-                {/* Subsección 8.2.2 */}
+                {/* Subsección 7.2.2 */}
                 <div className="ml-4 mb-3">
-                  <h5 className="font-semibold text-sm mb-2">8.2.2</h5>
+                  <h5 className="font-semibold text-sm mb-2">7.2.2</h5>
                   <p className="text-gray-700">
-                    Si el premio económico es igual o mayor a $400 el ganador de dicho premio se comprometerá a comprar $100 en números del sorteo vigente por el cual fue acreedor al premio.
+                    El Ganador del premio economico acepta comprar 100 numeros del sorteo en curso
                   </p>
                 </div>
 
-                {/* Subsección 8.2.3 */}
+                {/* Subsección 7.2.3 */}
                 <div className="ml-4">
-                  <h5 className="font-semibold text-sm mb-2">8.2.3</h5>
+                  <h5 className="font-semibold text-sm mb-2">7.2.3</h5>
                   <p className="text-gray-700">
                     Las promociones lanzadas en cada evento mediante nuestras redes sociales y canales oficiales son vigentes únicamente desde el momento que se anuncian hasta las 11:59pm del mismo día.
                   </p>
@@ -137,25 +137,25 @@ export const DialogTerminosyCondiciones = () => {
               </div>
             </div>
 
-            {/* Sección 9 */}
+            {/* Sección 8 */}
             <div>
-              <h3 className="font-semibold text-base mb-2">9. Asignación de números</h3>
+              <h3 className="font-semibold text-base mb-2">8. Asignación de números</h3>
               <p className="text-gray-700">
                 Los números serán asignados por el sistema de manera única y aleatoria para cada participante.
               </p>
             </div>
 
-            {/* Sección 10 */}
+            {/* Sección 9 */}
             <div>
-              <h3 className="font-semibold text-base mb-2">10. Aceptación de Términos</h3>
+              <h3 className="font-semibold text-base mb-2">9. Aceptación de Términos</h3>
               <p className="text-gray-700">
                 La participación en el sorteo implica la aceptación de estos términos y condiciones.
               </p>
             </div>
 
-            {/* Sección 11 */}
+            {/* Sección 10 */}
             <div>
-              <h3 className="font-semibold text-base mb-2">11. Pagos con transferencia</h3>
+              <h3 className="font-semibold text-base mb-2">10. Pagos con transferencia</h3>
               <p className="text-gray-700">
                 El participante  despues de  realizar el pago tendra que enviar los datos de pago o la captura  al número de WhatsApp de EventosIB.com una vez realizado el pedido, de no hacerlo su pedido no será procesado.
               </p>
