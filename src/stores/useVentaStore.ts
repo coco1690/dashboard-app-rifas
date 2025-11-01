@@ -635,14 +635,14 @@ interface PaqueteConfig {
 }
 
 const PAQUETES_CONFIG: Record<number, PaqueteConfig> = {
-  3: { paquetes: [3, 4, 5, 10, 15, 20], minimo: 21 },
-  4: { paquetes: [10, 12, 15, 20, 50, 100], minimo: 101 },
-  5: { paquetes: [10, 20, 30, 40, 100, 200], minimo: 201 }
+  3: { paquetes: [3, 4, 5, 10, 15, 20], minimo: 0 },
+  4: { paquetes: [10, 12, 15, 20, 50, 100], minimo: 0 },
+  5: { paquetes: [10, 20, 30, 40, 100, 200], minimo: 0 }
 }
 
 const DEFAULT_CONFIG: PaqueteConfig = {
   paquetes: [10, 12, 15, 20, 50, 100],
-  minimo: 101
+  minimo: 0
 }
 
 // ============================================================================

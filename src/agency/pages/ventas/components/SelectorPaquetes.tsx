@@ -401,7 +401,7 @@ const SelectorPaquetes: React.FC<SelectorPaquetesProps> = ({
   // ============================================================================
   const [tipoSeleccion, setTipoSeleccion] = useState<TipoSeleccion>('paquete')
   const [paqueteSeleccionado, setPaqueteSeleccionado] = useState<number>(10)
-  const [cantidadPersonalizada, setCantidadPersonalizada] = useState<number>(101)
+  const [cantidadPersonalizada, setCantidadPersonalizada] = useState<number>(1)
   const [boletosSeleccionados, setBoletosSeleccionados] = useState<string[]>([])
   const [cedula, setCedula] = useState('')
   const [metodoPago, setMetodoPago] = useState<MetodoPago>('efectivo')
@@ -414,7 +414,7 @@ const SelectorPaquetes: React.FC<SelectorPaquetesProps> = ({
 
   // Estados para paquetes dinámicos
   const [paquetesPermitidos, setPaquetesPermitidos] = useState<number[]>([10, 12, 15, 20, 50, 100])
-  const [minimoPersonalizado, setMinimoPersonalizado] = useState<number>(101)
+  const [minimoPersonalizado, setMinimoPersonalizado] = useState<number>(1)
   const [cargandoPaquetes, setCargandoPaquetes] = useState(false)
   const [digitosRifa, setDigitosRifa] = useState<number>(4)
 
