@@ -47,7 +47,7 @@ export const CustomJumbotron = ({
   // }
 
   return (
-    <section className="bg-black text-white min-h-[600px] lg:min-h-[700px] flex items-center">
+    <section className="bg-gray-900 text-white min-h-[600px] lg:min-h-[700px] flex items-center">
       <div className="container mx-auto px-4 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
 
