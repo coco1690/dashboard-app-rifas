@@ -238,7 +238,7 @@ export const CustomProgressBar = ({
               <span className="text-2xl group-hover:scale-125 transition-transform duration-300">🎯</span>
               <div className="flex flex-col items-center">
                 <span className="tracking-widest">¡REGÍSTRATE AQUÍ!</span>
-                <span className="text-xs font-normal opacity-90">¡No te quedes sin tu boleto!</span>
+                <span className="text-xs font-normal opacity-90">¡No te quedes sin tu número!</span>
               </div>
               <span className="text-2xl group-hover:scale-125 transition-transform duration-300">🎯</span>
             </div>
