@@ -16,14 +16,14 @@ export const MetodosDePago = () => {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
   const metodosPago: MetodoPago[] = [
-    {
-      nombre: "USDT",
-      logo: "../icons/usdt.svg",
-      descripcion: "Tether USDT",
-      color: "bg-green-100 text-green-600 border-green-200",
-      direccion: "TPMSKeYptYToCkiJKQP97VMrAef48BS4FC",
-      red: "TRX Tron (TRC20)"
-    },
+    // {
+    //   nombre: "USDT",
+    //   logo: "../icons/usdt.svg",
+    //   descripcion: "Tether USDT",
+    //   color: "bg-green-100 text-green-600 border-green-200",
+    //   direccion: "TPMSKeYptYToCkiJKQP97VMrAef48BS4FC",
+    //   red: "TRX Tron (TRC20)"
+    // },
     {
       nombre: "Binance",
       logo: "../icons/binance.svg",
@@ -52,16 +52,16 @@ export const MetodosDePago = () => {
         <div className="container mx-auto">
           {/* Header */}
           <div className="text-center mb-16">
-            <h1 className="text-4xl lg:text-6xl font-light tracking-tight mb-6 text-gray-800">
+            <h1 className="text-3xl lg:text-4xl font-light tracking-tight mb-6 text-gray-800 text-shadow-sm">
               Métodos de Pago
             </h1>
-            <p className="text-lg text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-sm text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
               En EventosIB.com tienes diferentes opciones físicas y digitales para pagar de la manera más fácil y segura.
             </p>
           </div>
 
           {/* Payment Methods Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-6 max-w-6xl mx-auto">
             {metodosPago.map((metodo, index) => (
               <div
                 key={index}
