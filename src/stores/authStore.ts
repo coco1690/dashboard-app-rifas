@@ -21,6 +21,7 @@ type AuthState = {
     isSessionChecked: boolean
     setUserFromSession: (email: string | null) => Promise<void>
     signInWithPassword: (email: string, password: string) => Promise<User>
+
     signUp: (
         documento_identidad: string,
         nombre: string,
@@ -29,6 +30,7 @@ type AuthState = {
         password: string,
         userType?: 'cliente' | 'agencia'
     ) => Promise<void>
+
     signUpClienteByAgencia: (
         documento_identidad: string,
         nombre: string,
@@ -37,6 +39,7 @@ type AuthState = {
         password: string,
         agencia_id: string
     ) => Promise<void>
+
     signUpAgenciaByAdmin: (
         documento_identidad: string,
         nombre: string,
@@ -47,6 +50,15 @@ type AuthState = {
         ciudad: string,
         comision_porcentaje: number
     ) => Promise<void>
+
+    signUpClienteByAdmin: (
+        documento_identidad: string,
+        nombre: string,
+        phone: string,
+        email: string,
+        password: string
+    ) => Promise<void>
+
     logout: () => Promise<void>
 }
 
@@ -190,65 +202,6 @@ export const useAuthStore = create<AuthState>()(
                 set({ user: data, isSessionChecked: true })
             },
 
-            // signInWithPassword: async (email, password) => {
-            //     set({ loading: true, error: null })
-
-            //     // Primero verificar si existe en nuestra tabla users
-            //     const { data: userData, error: userError } = await supabase
-            //         .from('users')
-            //         .select('*')
-            //         .eq('email', email)
-            //         .single()
-
-            //     if (userError || !userData) {
-            //         set({ loading: false, error: 'Usuario no encontrado' })
-            //         toast.error('Usuario no encontrado')
-            //         throw new Error('Usuario no encontrado')
-            //     }
-
-            //     // Verificar contraseña con bcrypt
-            //     const passwordMatch = await bcrypt.compare(password, userData.password)
-
-            //     if (!passwordMatch) {
-            //         set({ loading: false, error: 'Contraseña incorrecta' })
-            //         toast.error('Contraseña incorrecta')
-            //         throw new Error('Contraseña incorrecta')
-            //     }
-
-            //     // Validar si es agencia verificada
-            //     if (userData.user_type === 'agencia') {
-            //         const { data: agenciaData } = await supabase
-            //             .from('agencias')
-            //             .select('is_verified')
-            //             .eq('user_id', userData.id)
-            //             .single()
-
-            //         if (!agenciaData?.is_verified) {
-            //             set({ loading: false, error: 'Cuenta no verificada' })
-            //             toast.error('Cuenta no verificada', {
-            //                 description: 'Tu cuenta aún no ha sido verificada'
-            //             })
-            //             throw new Error('Cuenta no verificada')
-            //         }
-            //     }
-
-            //     // Intentar login en Supabase Auth, si falla crear la cuenta
-            //     let authResult = await supabase.auth.signInWithPassword({ email, password })
-
-            //     if (authResult.error) {
-            //         // Si no existe en Auth, crearlo
-            //         const signUpResult = await supabase.auth.signUp({ email, password })
-            //         if (signUpResult.error) {
-            //             set({ loading: false, error: 'Error de autenticación' })
-            //             throw new Error('Error de autenticación')
-            //         }
-            //     }
-
-            //     const user = userData as User
-            //     set({ user, loading: false })
-            //     toast.success('¡Bienvenido!', { description: `Hola ${user.nombre}` })
-            //     return user
-            // },
 
             signInWithPassword: async (email, password) => {
                 set({ loading: true, error: null })
@@ -366,7 +319,7 @@ export const useAuthStore = create<AuthState>()(
                     throw err
                 }
             },
-            
+
             signUp: async (documento_identidad, nombre, phone, email, password, userType = 'cliente') => {
                 set({ loading: true, error: null });
 
@@ -668,6 +621,102 @@ export const useAuthStore = create<AuthState>()(
                 set({ loading: false });
                 toast.success('¡Agencia creada!', {
                     description: `${nombre} ha sido registrada. Debes verificarla antes de que pueda iniciar sesión.`
+                })
+                return;
+            },
+
+            // 🆕 FUNCIÓN: Para que admin cree clientes (sin agencia asignada)
+            signUpClienteByAdmin: async (
+                documento_identidad: string,
+                nombre: string,
+                phone: string,
+                email: string,
+                password: string
+            ) => {
+                set({ loading: true, error: null });
+
+                const hashedPassword = await bcrypt.hash(password, 10);
+
+                // Verificar duplicados
+                const { data: existingUsers } = await supabase
+                    .from('users')
+                    .select('documento_identidad, email')
+                    .or(`documento_identidad.eq.${documento_identidad},email.eq.${email}`)
+                    .limit(1)
+                    .maybeSingle();
+
+                if (existingUsers) {
+                    let errorMsg = '';
+                    if (existingUsers.documento_identidad === documento_identidad) {
+                        errorMsg = 'Este documento ya está registrado';
+                    } else if (existingUsers.email === email) {
+                        errorMsg = 'Este correo ya está registrado';
+                    }
+
+                    set({ loading: false, error: errorMsg });
+                    toast.error('Usuario duplicado', {
+                        description: errorMsg
+                    })
+                    return;
+                }
+
+                // Obtener el ID del admin actual
+                const currentUser = get().user;
+                if (!currentUser || currentUser.user_type !== 'admin') {
+                    const errorMsg = 'Solo los administradores pueden crear clientes'
+                    set({ loading: false, error: errorMsg });
+                    toast.error('Acceso denegado', {
+                        description: errorMsg
+                    })
+                    return;
+                }
+
+                // Insertar en 'users'
+                const { data: userInserted, error: userInsertError } = await supabase
+                    .from('users')
+                    .insert([{
+                        documento_identidad,
+                        nombre,
+                        phone,
+                        email,
+                        password: hashedPassword,
+                        user_type: 'cliente',
+                    }])
+                    .select('id');
+
+                if (userInsertError || !userInserted) {
+                    const errorMsg = userInsertError?.message || 'Error al registrar usuario'
+                    set({ loading: false, error: errorMsg });
+                    toast.error('Error al crear cliente', {
+                        description: errorMsg
+                    })
+                    return;
+                }
+
+                const userId = userInserted[0].id;
+
+                // Insertar en 'clientes' SIN agencia_id (como auto-registro)
+                const { error: clienteError } = await supabase.from('clientes').insert([{
+                    user_id: userId,
+                    direccion: '',
+                    ciudad: '',
+                    agencia_id: null,  // ← Sin agencia asignada
+                }]);
+
+                if (clienteError) {
+                    await supabase.from('users').delete().eq('id', userId);
+                    set({ loading: false, error: 'Error al crear el cliente' });
+                    toast.error('Error', {
+                        description: 'Error al crear el cliente'
+                    })
+                    return;
+                }
+
+                // ✅ NO crear en Supabase Auth - el cliente se autenticará cuando haga login
+                console.log(`✅ Cliente creado exitosamente por el admin ${currentUser.id}`);
+                set({ loading: false });
+                toast.success('¡Cliente creado!', {
+                    description: `${nombre} ha sido registrado. Podrá iniciar sesión con su correo y contraseña.`
                 })
                 return;
             },

@@ -513,6 +513,7 @@ type UserSummary = {
   nombre: string
   email: string
   phone: string
+  documento_identidad?: string
   user_type: 'cliente' | 'agencia'
 }
 
@@ -585,6 +586,8 @@ type UserListState = {
   deleteAgencia: (userId: string) => Promise<boolean>
   deleteCliente: (userId: string) => Promise<boolean>
 
+  searchCliente: (searchTerm: string) => Promise<ClientDetails | null>
+
   // Función para resetear el estado
   reset: () => void
 }
@@ -603,24 +606,61 @@ export const useUserListStore = create<UserListState>((set, get) => ({
   fetchClientes: async () => {
     console.log('👥 fetchClientes ejecutándose')
     const state = get()
-    if (state.loading || state.clientesLoaded) return
+    const now = Date.now()
 
+    // Verificar si ya está cargando
+    if (state.loading) {
+      console.log('⏭️ fetchClientes ya está en progreso, saltando...')
+      return
+    }
+
+    // Cache de 5 minutos (300000ms) - solo si ya tenemos datos y el cache es válido
+    if (state.clientesLoaded &&  // ✅ CORREGIDO: era agenciasLoaded
+      state.clientes.length > 0 &&
+      state.lastFetchAgencias &&
+      (now - state.lastFetchAgencias) < 300000) {
+      console.log('📋 fetchClientes: usando cache (válido por 5 minutos)')
+      return
+    }
+
+    console.log('🔍 fetchClientes: consultando servidor')
     set({ loading: true, error: null })
 
     try {
       const { data, error } = await supabase
-        .from('users')
-        .select('id, nombre, email, phone, user_type')
-        .eq('user_type', 'cliente')
+        .from('clientes')
+        .select(`
+        user_id,
+        direccion,
+        ciudad,
+        agencia_id,
+        created_at,
+        user:users (
+          id,
+          documento_identidad,
+          nombre,
+          email,
+          phone,
+          user_type
+        )
+      `)
 
       if (error) {
         set({ error: error.message, loading: false })
       } else {
+        const clientes = (data as any[]).map((cliente) => ({
+          ...cliente,
+          user: Array.isArray(cliente.user) ? cliente.user[0] : cliente.user
+        })) as ClientDetails[]
+
         set({
-          clientes: data as UserSummary[],
+          clientes: clientes.map(cliente => cliente.user),
           loading: false,
-          clientesLoaded: true
+          clientesLoaded: true,  // ✅ CORREGIDO: era agenciasLoaded
+          lastFetchAgencias: now
         })
+
+        console.log(`✅ fetchClientes: cargadas ${clientes.length} clientes exitosamente`)
       }
     } catch (err) {
       set({
@@ -762,6 +802,7 @@ export const useUserListStore = create<UserListState>((set, get) => ({
           created_at,
           user:users (
             id,
+            documento_identidad,
             nombre,
             email,
             phone,
@@ -1069,6 +1110,50 @@ export const useUserListStore = create<UserListState>((set, get) => ({
         loading: false
       })
       return false
+    }
+  },
+
+  searchCliente: async (searchTerm: string) => {
+    set({ loading: true, error: null })
+
+    try {
+      // Buscar usuario primero
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('id, documento_identidad, nombre, email, phone, user_type')
+        .eq('user_type', 'cliente')
+        .or(`documento_identidad.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%,nombre.ilike.%${searchTerm}%`)
+        .limit(1)
+        .maybeSingle()
+
+      if (userError) throw userError
+      if (!userData) {
+        set({ loading: false, error: 'Cliente no encontrado' })
+        return null
+      }
+
+      // Obtener datos del cliente
+      const { data: clienteData, error: clienteError } = await supabase
+        .from('clientes')
+        .select('user_id, direccion, ciudad, agencia_id, created_at')
+        .eq('user_id', userData.id)
+        .single()
+
+      if (clienteError) throw clienteError
+
+      const clienteCompleto = {
+        ...clienteData,
+        user: userData
+      }
+
+      set({ selectedCliente: clienteCompleto, loading: false })
+      return clienteCompleto
+    } catch (err) {
+      set({
+        error: err instanceof Error ? err.message : 'Error desconocido',
+        loading: false
+      })
+      return null
     }
   },
 

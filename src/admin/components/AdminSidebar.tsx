@@ -10,7 +10,8 @@ import {
   X,
   UserCircle,
   TrendingUp,
-  DollarSign
+  DollarSign,
+  Building2
 } from 'lucide-react';
 import { CustomLogo } from '@/components/custom/CustomLogo';
 import { useAuthStore } from '@/stores/authStore';
@@ -29,7 +30,8 @@ const getMenuItemsByRole = (userRole: string) => {
     case 'admin':
       return [
         { icon: Home, label: 'Dashboard', to: '/admin' },
-        { icon: Users, label: 'Agencias', to: '/admin/admin_agencias' },
+        { icon: Building2, label: 'Agencias', to: '/admin/admin_agencias' },
+        { icon: Users, label: 'Clientes', to: '/admin/admin_clientes' },
         { icon: Ticket, label: 'Rifas', to: '/admin/admin_rifas' },
         { icon: ShoppingCart, label: 'Ordenes', to: '/admin/ordenes' },
         { icon: Repeat, label: 'Recargas', to: '/admin/recargas' },
@@ -99,6 +101,7 @@ export const AdminSidebar: React.FC<SidebarProps> = ({
     const routesWithSubroutes = [
       '/admin/admin_rifas',
       '/admin/admin_agencias',
+      '/admin/admin_clientes',
       '/agency/clients',
       '/agency/rifas',
       '/agency/ventas'
@@ -299,7 +302,7 @@ export const BottomNavigation: React.FC = () => {
   }, [user?.user_type]);
 
   const menuItems = useMemo(() => {
-    return getMenuItemsByRole(userRole).slice(0, 5); // Limitar a 5 items para móvil
+    return getMenuItemsByRole(userRole).slice(0, 7); // Limitar a 5 items para móvil
   }, [userRole]);
 
   const isActiveRoute = (to: string) => {
@@ -308,6 +311,7 @@ export const BottomNavigation: React.FC = () => {
     const routesWithSubroutes = [
       '/admin/admin_rifas',
       '/admin/admin_agencias',
+      '/admin/admin_clientes',
       '/agency/clients',
       '/agency/rifas',
       '/agency/ventas'
@@ -319,31 +323,34 @@ export const BottomNavigation: React.FC = () => {
   };
 
   return (
-    <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-2 py-1 z-30 safe-area-bottom">
-      <div className="flex justify-around items-center">
-        {menuItems.map((item, index) => {
-          const Icon = item.icon;
-          const isActive = isActiveRoute(item.to || '/');
+    <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-30 safe-area-bottom">
+      {/* Contenedor con scroll horizontal */}
+      <div className="overflow-x-auto scrollbar-hide">
+        <div className="flex px-2 py-2 min-w-max">
+          {menuItems.map((item, index) => {
+            const Icon = item.icon;
+            const isActive = isActiveRoute(item.to || '/');
 
-          return (
-            <Link
-              key={index}
-              to={item.to || '/'}
-              className={`
-                flex flex-col items-center space-y-1 px-2 py-2 rounded-lg transition-colors min-w-0 flex-1
-                ${isActive
-                  ? 'text-teal-600 bg-teal-50'
-                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
-                }
-              `}
-            >
-              <Icon size={20} className="flex-shrink-0" />
-              <span className="text-xs font-medium truncate w-full text-center">
-                {item.label}
-              </span>
-            </Link>
-          );
-        })}
+            return (
+              <Link
+                key={index}
+                to={item.to || '/'}
+                className={`
+                  flex flex-col items-center space-y-1 px-4 py-2 rounded-lg transition-colors whitespace-nowrap
+                  ${isActive
+                    ? 'text-white bg-black shadow-md'
+                    : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                  }
+                `}
+              >
+                <Icon size={20} className="flex-shrink-0" />
+                <span className="text-xs font-medium">
+                  {item.label}
+                </span>
+              </Link>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

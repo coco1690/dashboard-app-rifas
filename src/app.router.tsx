@@ -28,6 +28,9 @@ import { DialogTerminosyCondiciones } from "./single_page/components/DialogTermi
 import { RecargaBoletosPage } from "./admin/pages/recargas/RecargaBoletosPage";
 import { CarritoDeComprasPage } from "./single_page/pages/carrito/CarritoDeComprasPage";
 import { AdminRifasEditPage } from "./admin/pages/rifas/page/AdminRifasEditPage";
+import { AdminClientesPage } from "./admin/pages/clientes/AdminClientesPage";
+import CrearClientePage from "./admin/pages/clientes/CrearClientePage";
+import { AdminViewClientIdPage } from "./admin/pages/clientes/page/AdminViewClientIdPage";
 
 
 
@@ -64,7 +67,6 @@ export const appRouter = createBrowserRouter([
                 path: 'carrito',
                 element: <CarritoDeComprasPage />
             },
-
 
         ]
     },
@@ -123,7 +125,7 @@ export const appRouter = createBrowserRouter([
                 path: 'admin_rifas/edit/:id',
                 element: <AdminRifasEditPage />
             },
-            
+
             {
                 path: 'admin_agencias/new_agencia',
                 element: <CrearAgenciasPage />
@@ -147,6 +149,18 @@ export const appRouter = createBrowserRouter([
             {
                 path: 'admin_historial',
                 element: <AdminHistorialVentas />
+            },
+                {
+                path: 'admin_clientes',
+                element: <AdminClientesPage />
+            },
+            {
+                path: 'admin_clientes/new',
+                element: <CrearClientePage />
+            },
+            {
+                path: 'admin_clientes/:id',
+                element: <AdminViewClientIdPage />
             },
 
         ]
