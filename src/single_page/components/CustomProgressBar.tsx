@@ -152,18 +152,18 @@ interface EstadisticasRifaProps {
   rifaDescription?: string;
 }
 
-export const CustomProgressBar = ({ 
-  totalBoletos, 
-  vendidos, 
+export const CustomProgressBar = ({
+  totalBoletos,
+  vendidos,
   rifaDescription
 }: EstadisticasRifaProps) => {
   const navigate = useNavigate();
 
   // Calcular porcentaje exacto
   const porcentajeExacto = totalBoletos > 0 ? (vendidos / totalBoletos) * 100 : 0;
-  
+
   // Formatear según el valor
-  const porcentajeVendido = porcentajeExacto < 1 
+  const porcentajeVendido = porcentajeExacto < 1
     ? porcentajeExacto.toFixed(2)
     : porcentajeExacto < 10
       ? porcentajeExacto.toFixed(1)
@@ -210,7 +210,7 @@ export const CustomProgressBar = ({
           {/* Enhanced Progress Bar */}
           <div className="relative">
             <div className="w-full bg-slate-200 rounded-full h-3 shadow-inner overflow-hidden">
-              <div 
+              <div
                 className="h-full bg-gradient-to-r from-emerald-500 via-emerald-600 to-emerald-700 rounded-full transition-all duration-700 ease-out relative shadow-sm"
                 style={{ width: `${porcentajeExacto}%` }}
               >
@@ -225,32 +225,22 @@ export const CustomProgressBar = ({
         <div className="mb-6">
           <button
             onClick={handleRegisterClick}
-            className="group relative w-full bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 text-white font-bold text-lg py-4 px-8 rounded-2xl shadow-2xl hover:shadow-amber-500/50 transform hover:scale-105 transition-all duration-300 overflow-hidden"
+            className="relative w-full bg-amber-500 hover:bg-amber-600 text-white font-extrabold text-lg py-5 px-8 rounded-2xl shadow-2xl hover:shadow-amber-400/80 transform hover:-translate-y-1 transition-all duration-300 overflow-hidden group"
           >
-            {/* Efecto de brillo animado */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-            
-            {/* Onda de pulso */}
-            <div className="absolute inset-0 rounded-2xl animate-ping opacity-20 bg-amber-400" />
-            
-            {/* Contenido del botón */}
+            {/* Ondas animadas de fondo */}
+            <div className="absolute inset-0 opacity-50">
+              <div className="absolute top-0 left-0 w-40 h-40 bg-white/20 rounded-full -translate-x-1/2 -translate-y-1/2 animate-ping" />
+              <div className="absolute bottom-0 right-0 w-40 h-40 bg-white/20 rounded-full translate-x-1/2 translate-y-1/2 animate-ping animation-delay-500" style={{ animationDelay: '0.5s' }} />
+            </div>
+
+            {/* Contenido */}
             <div className="relative flex items-center justify-center gap-3">
-              <svg 
-                className="w-6 h-6 animate-bounce" 
-                fill="currentColor" 
-                viewBox="0 0 20 20"
-              >
-                <path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6z"/>
-              </svg>
-              <span className="tracking-wide">¡REGÍSTRATE AQUÍ!</span>
-              <svg 
-                className="w-6 h-6 group-hover:translate-x-2 transition-transform duration-300" 
-                fill="none" 
-                stroke="currentColor" 
-                viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 7l5 5m0 0l-5 5m5-5H6"/>
-              </svg>
+              <span className="text-2xl group-hover:scale-125 transition-transform duration-300">🎯</span>
+              <div className="flex flex-col items-center">
+                <span className="tracking-widest">¡REGÍSTRATE AQUÍ!</span>
+                <span className="text-xs font-normal opacity-90">¡No te quedes sin tu boleto!</span>
+              </div>
+              <span className="text-2xl group-hover:scale-125 transition-transform duration-300">🎯</span>
             </div>
           </button>
         </div>
@@ -276,13 +266,12 @@ export const CustomProgressBar = ({
 
         {/* Status Badge */}
         <div className="text-center mt-6">
-          <span className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold shadow-sm ${
-            porcentajeNumerico === 100 
-              ? 'bg-red-100 text-red-800 border border-red-200' 
-              : porcentajeNumerico > 75 
+          <span className={`inline-flex items-center px-4 py-2 rounded-full text-sm font-semibold shadow-sm ${porcentajeNumerico === 100
+              ? 'bg-red-100 text-red-800 border border-red-200'
+              : porcentajeNumerico > 75
                 ? 'bg-amber-100 text-amber-800 border border-amber-200'
                 : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
-          }`}>
+            }`}>
             {porcentajeNumerico === 100 ? (
               <>
                 <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
