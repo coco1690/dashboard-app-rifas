@@ -7,7 +7,7 @@ export const CustomComoFiunciona = () => {
       <div className="container mx-auto">
         {/* Título */}
         <div className="text-center mb-16">
-          <h1 className="text-4xl lg:text-6xl font-light tracking-tight mb-6 text-gray-400">
+          <h1 className="text-3xl lg:text-4xl font-bold tracking-tight mb-6 text-gray-400">
             COMO FUNCIONA
           </h1>
         </div>
@@ -23,7 +23,7 @@ export const CustomComoFiunciona = () => {
               </div>
             </div>
             <div className="space-y-4">
-              <h3 className="text-lg font-medium text-gray-400 leading-relaxed">
+              <h3 className="text-sm lg:text-lg font-medium text-gray-400 leading-relaxed">
                 El evento se jugará cuando se<br />
                 hayan vendido el 100% de<br />
                 números disponibles.
@@ -39,7 +39,7 @@ export const CustomComoFiunciona = () => {
               </div>
             </div>
             <div className="space-y-4">
-              <h3 className="text-lg font-medium text-gray-400 leading-relaxed">
+              <h3 className="text-sm lg:text-lg font-medium text-gray-400 leading-relaxed">
                 El ganador se elegirá según las cifras<br />
                 de los últimos números de Premio<br />
                 mayor de la L Nacional.
@@ -55,7 +55,7 @@ export const CustomComoFiunciona = () => {
               </div>
             </div>
             <div className="space-y-4">
-              <h3 className="text-lg font-medium text-gray-400 leading-relaxed">
+              <h3 className="text-sm lg:text-lg font-medium text-gray-400 leading-relaxed">
                 La fecha y ganador se<br />
                 comunicarán a través de WhatsApp<br />
                 o en nuestra cuenta de Instagram :

@@ -11,7 +11,7 @@ export const NumerosDeLaSuerte = ({ numbers, emoji = '' }: Props) => {
         <section className="py-20 px-4 lg:px-8 bg-gray-100">
             <div className="container mx-auto text-center">
                 <p className="text-2xl lg:text-2xl tracking-tight mb-6">
-                    Por la compra de tu boleta participa gratis en los
+                    Por la compra de tu número participa gratis en los
                 </p>
                 <h1 className="text-2xl lg:text-5xl font-bold tracking-tight mb-15">
                     ¡Números de la suerte!
@@ -36,7 +36,7 @@ export const NumerosDeLaSuerte = ({ numbers, emoji = '' }: Props) => {
                 )}
 
                 <p className="text-2xl lg:text-2xl tracking-tight mt-10">
-                    Si el número de tu boleta coincide con alguno de los
+                    Si el número coincide con alguno de los
                 </p>
                 <p className="text-2xl lg:text-2xl tracking-tight">
                     números de la suerte ganas de forma instantánea

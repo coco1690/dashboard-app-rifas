@@ -33,8 +33,8 @@ export const MetodosDePago = () => {
       // red: "TRX Tron (TRC20)"
     },
     {
-      nombre: "PayPal",
-      logo: "../icons/paypal.svg",
+      nombre: "Transferencia Bancaria",
+      logo: "../icons/bank-card.svg",
       descripcion: "Transferencia bancaria",
       color: "bg-blue-100 text-blue-600 border-blue-200"
     }
