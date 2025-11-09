@@ -45,7 +45,7 @@ const verificarGanadores = (venta: HistorialVenta): {
   return result
 }
 
-export const OrdersHistorialVentasClientes: React.FC<OrdersHistorialVentasClientesProps> = ({ 
+export const OrdersHistorialVentasClientes: React.FC<OrdersHistorialVentasClientesProps> = ({
   agenciaId
 }) => {
   const [searchParams] = useSearchParams()
@@ -70,7 +70,7 @@ export const OrdersHistorialVentasClientes: React.FC<OrdersHistorialVentasClient
     }
   }, [agenciaId, setFiltros])
 
-   // Cargar historial inicial
+  // Cargar historial inicial
   useEffect(() => {
     const filtrosIniciales = agenciaId ? { agenciaId } : {}
     obtenerHistorial(filtrosIniciales, pageParam)
@@ -81,7 +81,7 @@ export const OrdersHistorialVentasClientes: React.FC<OrdersHistorialVentasClient
     else obtenerHistorial({}, 1)
   }, [debouncedCliente])
 
-  
+
 
   const agruparVentasPorCliente = (ventas: HistorialVenta[]): ClienteAgrupado[] => {
     const clientesMap = new Map<string, ClienteAgrupado>()
@@ -119,13 +119,29 @@ export const OrdersHistorialVentasClientes: React.FC<OrdersHistorialVentasClient
       }
     })
 
+    // return Array.from(clientesMap.values()).sort((a, b) => {
+    //   if (a.esGanadorPrincipal && !b.esGanadorPrincipal) return -1
+    //   if (!a.esGanadorPrincipal && b.esGanadorPrincipal) return 1
+    //   if (a.esGanadorSuerte && !b.esGanadorSuerte) return -1
+    //   if (!a.esGanadorSuerte && b.esGanadorSuerte) return 1
+    //   return a.cliente_nombre.localeCompare(b.cliente_nombre)
+    // })
+
     return Array.from(clientesMap.values()).sort((a, b) => {
+      // 1. Ganadores principales primero
       if (a.esGanadorPrincipal && !b.esGanadorPrincipal) return -1
       if (!a.esGanadorPrincipal && b.esGanadorPrincipal) return 1
+
+      // 2. Ganadores de suerte segundo
       if (a.esGanadorSuerte && !b.esGanadorSuerte) return -1
       if (!a.esGanadorSuerte && b.esGanadorSuerte) return 1
-      return a.cliente_nombre.localeCompare(b.cliente_nombre)
+
+      // 3. ✅ NUEVO: Ordenar por fecha de venta más reciente
+      const fechaA = new Date(a.ventas[0].fecha_venta).getTime()
+      const fechaB = new Date(b.ventas[0].fecha_venta).getTime()
+      return fechaB - fechaA  // Más reciente primero
     })
+
   }
 
   const toggleClient = (clienteId: string) => {
@@ -177,10 +193,10 @@ export const OrdersHistorialVentasClientes: React.FC<OrdersHistorialVentasClient
 
             {/* Botón expandir/colapsar */}
             {clientesAgrupados.length > 0 && (
-              <Button 
-                onClick={toggleAll} 
-                variant="outline" 
-                size="sm" 
+              <Button
+                onClick={toggleAll}
+                variant="outline"
+                size="sm"
                 className="flex items-center gap-2 shrink-0"
               >
                 <ExpandIcon className="h-4 w-4" />
@@ -248,7 +264,7 @@ export const OrdersHistorialVentasClientes: React.FC<OrdersHistorialVentasClient
                 No se encontraron clientes
               </h3>
               <p className="text-gray-500 text-sm max-w-md mx-auto">
-                {clienteBusqueda 
+                {clienteBusqueda
                   ? `No hay ventas que coincidan con "${clienteBusqueda}"`
                   : "No hay ventas registradas en el sistema"
                 }

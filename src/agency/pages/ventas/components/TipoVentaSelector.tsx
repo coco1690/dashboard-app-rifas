@@ -3,7 +3,7 @@ import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Badge } from '@/components/ui/badge'
 // import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Mail } from 'lucide-react'
+import { Mail, MessageCircle } from 'lucide-react'
 
 interface TipoVentaSelectorProps {
   tipoVenta: 'email' | 'whatsapp'
@@ -32,13 +32,13 @@ export const TipoVentaSelector: React.FC<TipoVentaSelectorProps> = ({
           </Label>
         </div>
 
-        {/* <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2">
           <RadioGroupItem value="whatsapp" id="tipo-whatsapp" />
           <Label htmlFor="tipo-whatsapp" className="flex items-center gap-2 cursor-pointer">
             <MessageCircle className="h-4 w-4 text-green-600" />
             Venta con WhatsApp
           </Label>
-        </div> */}
+        </div>
       </RadioGroup>
 
       {/* {tipoVenta === 'whatsapp' && (

@@ -133,7 +133,7 @@ export const VentaCard: React.FC<VentaCardProps> = ({ venta }) => {
           <div className="pt-2 border-t border-gray-200">
             <p className="text-xs text-gray-500 mb-2">Números comprados:</p>
             <div className="flex flex-wrap gap-1">
-              {venta.numeros_boletos.slice(0, 8).map((numero) => {
+              {venta.numeros_boletos.slice(0, 20).map((numero) => {
                 const esNumeroGanador = verificacion.numerosGanadores.includes(numero)
                 const esGanadorPrincipal = verificacion.esGanadorPrincipal && venta.rifa_numero_ganador === numero
 
@@ -158,9 +158,9 @@ export const VentaCard: React.FC<VentaCardProps> = ({ venta }) => {
                 )
               })}
 
-              {venta.numeros_boletos.length > 8 && (
+              {venta.numeros_boletos.length > 20 && (
                 <Badge variant="outline" className="text-xs bg-gray-100">
-                  +{venta.numeros_boletos.length - 8} más
+                  +{venta.numeros_boletos.length - 20} más
                 </Badge>
               )}
             </div>
