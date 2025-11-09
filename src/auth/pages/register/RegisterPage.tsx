@@ -122,24 +122,36 @@
 //   )
 // }
 
-
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { PhoneInput } from "@/components/ui/PhoneInput" // ← NUEVO
 import { Link } from "react-router"
 import { useState } from "react"
 import { useAuthStore } from "@/stores/authStore"
-import { Mail, Lock, User, Phone, CreditCard, AlertCircle } from "lucide-react"
+import { Mail, Lock, User, CreditCard, AlertCircle } from "lucide-react"
+// import type { Country } from "@/lib/countries" // ← NUEVO
 
 export const RegisterPage = () => {
   const [cedula, setCedula] = useState('')
   const [fullName, setFullName] = useState('')
-  const [telefono, setTelefono] = useState('')
+  const [telefono, setTelefono] = useState('') // ← Ahora guardará número completo con código país
+  // const [paisTelefono, setPaisTelefono] = useState<Country | null>(null) // ← NUEVO (opcional)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
   const { signUp, loading, error } = useAuthStore()
+
+  // ← NUEVO: Handler para teléfono con país
+  const handlePhoneChange = (
+    fullNumber: string, 
+    // country: Country
+  ) => {
+    setTelefono(fullNumber) // +573001234567
+    // setPaisTelefono(country)
+    // console.log('📱 Teléfono registrado:', fullNumber, 'País:', country.name)
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -164,6 +176,7 @@ export const RegisterPage = () => {
               <p className="text-gray-600 font-montserrat">Datos del Usuario</p>
             </div>
 
+            {/* ID */}
             <div className="space-y-2">
               <Label htmlFor="cedula" className="text-gray-900 font-semibold font-montserrat">
                 ID
@@ -176,13 +189,14 @@ export const RegisterPage = () => {
                   placeholder="N° de cédula"
                   value={cedula}
                   onChange={(e) => setCedula(e.target.value)}
-                  autoComplete="off"  //  Agregado (desactiva autocompletado para ID)
+                  autoComplete="off"
                   className="pl-10 border-2 border-gray-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 bg-white transition-all"
                   required
                 />
               </div>
             </div>
 
+            {/* Nombre */}
             <div className="space-y-2">
               <Label htmlFor="name" className="text-gray-900 font-semibold font-montserrat">
                 Nombre
@@ -195,32 +209,30 @@ export const RegisterPage = () => {
                   placeholder="Nombre y Apellido"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  autoComplete="name"  //  Agregado
+                  autoComplete="name"
                   className="pl-10 border-2 border-gray-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 bg-white transition-all"
                   required
                 />
               </div>
             </div>
 
+            {/* ✅ TELÉFONO CON SELECTOR DE PAÍS */}
             <div className="space-y-2">
-              <Label htmlFor="phone" className="text-gray-900 font-semibold font-montserrat">
-                Teléfono
+              <Label htmlFor="phone-input" className="text-gray-900 font-semibold font-montserrat">
+                Teléfono / WhatsApp
               </Label>
-              <div className="relative">
-                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-amber-500" />
-                <Input
-                  id="phone"
-                  type="text"
-                  placeholder="Tu WhatsApp"
-                  value={telefono}
-                  onChange={(e) => setTelefono(e.target.value)}
-                  autoComplete="tel"  // ✅ Agregado
-                  className="pl-10 border-2 border-gray-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 bg-white transition-all"
-                  required
-                />
-              </div>
+              <PhoneInput
+                value={telefono}
+                onChange={handlePhoneChange}
+                hideLabel // ← Ocultar label interno
+                placeholder="Ingrese su número"
+                required
+                showWhatsAppBadge
+                defaultCountryCode="ec"
+              />
             </div>
 
+            {/* Email */}
             <div className="space-y-2">
               <Label htmlFor="email" className="text-gray-900 font-semibold font-montserrat">
                 Correo electrónico
@@ -233,13 +245,14 @@ export const RegisterPage = () => {
                   placeholder="micorreo@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  autoComplete="email"  // ✅ Agregado
+                  autoComplete="email"
                   className="pl-10 border-2 border-gray-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 bg-white transition-all"
                   required
                 />
               </div>
             </div>
 
+            {/* Contraseña */}
             <div className="space-y-2">
               <Label htmlFor="password" className="text-gray-900 font-semibold font-montserrat">
                 Contraseña
@@ -252,13 +265,14 @@ export const RegisterPage = () => {
                   placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  autoComplete="new-password"  // ✅ Agregado (para nueva contraseña)
+                  autoComplete="new-password"
                   className="pl-10 border-2 border-gray-200 focus:border-amber-500 focus:ring-2 focus:ring-amber-200 bg-white transition-all"
                   required
                 />
               </div>
             </div>
 
+            {/* Botón de registro */}
             <Button
               type="submit"
               disabled={loading}

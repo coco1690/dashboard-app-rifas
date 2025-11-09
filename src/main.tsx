@@ -91,7 +91,7 @@ const handleAuthChange = async (event: string, session: any) => {
     // Si el usuario en cache coincide, NO hacer nada
     if (currentUser?.email === email && isInitialized) {
       if (import.meta.env.DEV) {
-        console.log("⏭️ Usuario ya en cache, skipping DB call")
+        // console.log("⏭️ Usuario ya en cache, skipping DB call")
       }
       useAuthStore.setState({ isSessionChecked: true })
       return

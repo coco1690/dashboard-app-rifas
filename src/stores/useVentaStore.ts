@@ -417,8 +417,8 @@
 //       // }
 
 //       // Mensaje de éxito mejorado
-      
-      
+
+
 //       const tipoPaquete = PAQUETES_PERMITIDOS.includes(boletos.length as any)
 //         ? `paquete de ${boletos.length}`
 //         : `paquete personalizado de ${boletos.length}`
@@ -571,6 +571,7 @@ import { create } from 'zustand'
 import { supabase } from '@/supabase/client'
 import { useEmailStore } from './useEmailStore'
 import { toast } from 'sonner'
+import bcrypt from 'bcryptjs'
 
 // ============================================================================
 // TYPES & INTERFACES
@@ -592,6 +593,18 @@ interface VentaData {
   enviarEmail?: boolean
 }
 
+interface VentaWhatsAppData {
+  documento_identidad: string
+  nombre: string
+  phone: string
+  agenciaId: string
+  rifaId: string
+  boletos: string[]
+  totalPago: number
+  metodoPago: MetodoPago
+  estadoPago?: EstadoPago
+}
+
 interface OrdenBoleto {
   id: string
   cliente_id: string
@@ -611,6 +624,8 @@ interface VentaStore {
   ultimaVenta: OrdenBoleto | null
   emailEnviado: boolean
   errorEmail: string | null
+  whatsappEnviado: boolean
+  errorWhatsApp: string | null
 
   // Acciones
   venderBoletos: (data: VentaData) => Promise<OrdenBoleto | null>
@@ -623,6 +638,9 @@ interface VentaStore {
   obtenerPrecioBoleta: (rifaId: string) => Promise<number | null>
   calcularTotal: (cantidadBoletos: number, precioBoleta: number) => number
   verificarEmailCliente: (documento: string) => Promise<{ valido: boolean; email?: string }>
+
+  venderBoletosPorWhatsApp: (data: VentaWhatsAppData) => Promise<OrdenBoleto | null>
+  verificarOCrearCliente: (documento: string, nombre: string, phone: string) => Promise<string | null>
 }
 
 // ============================================================================
@@ -753,10 +771,500 @@ export const useVentaStore = create<VentaStore>((set, get) => ({
   ultimaVenta: null,
   emailEnviado: false,
   errorEmail: null,
+  whatsappEnviado: false,
+  errorWhatsApp: null,
 
   // ============================================================================
   // ACCIONES
   // ============================================================================
+
+  verificarOCrearCliente: async (
+    documento: string,
+    nombre: string,
+    phone: string
+  ): Promise<string | null> => {
+    try {
+      // 1. Buscar si el cliente ya existe
+      const { data: clienteExistente, error: errorBusqueda } = await supabase
+        .from('users')
+        .select('id')
+        .eq('documento_identidad', documento)
+        .single()
+
+      // Si existe, retornar su ID
+      if (clienteExistente && !errorBusqueda) {
+        console.log('✅ Cliente ya existe:', clienteExistente.id)
+        return clienteExistente.id
+      }
+
+      // 2. Si no existe, crear nuevo cliente
+      console.log('📝 Creando nuevo cliente para WhatsApp...')
+
+      const hashedPassword = await bcrypt.hash('123456', 10)
+
+      // Insertar en users
+      const { data: nuevoUser, error: errorUser } = await supabase
+        .from('users')
+        .insert([{
+          documento_identidad: documento,
+          nombre: nombre,
+          phone: phone,
+          email: null, // Sin email
+          password: hashedPassword,
+          user_type: 'cliente',
+          usa_whatsapp: true
+        }])
+        .select('id')
+        .single()
+
+      if (errorUser || !nuevoUser) {
+        console.error('Error creando usuario:', errorUser)
+        throw new Error('Error al crear usuario')
+      }
+
+      // Insertar en clientes
+      const { error: errorCliente } = await supabase
+        .from('clientes')
+        .insert([{
+          user_id: nuevoUser.id,
+          direccion: '',
+          ciudad: '',
+          agencia_id: null, // Sin agencia asignada
+          prefiere_whatsapp: true
+        }])
+
+      if (errorCliente) {
+        // Rollback: eliminar user
+        await supabase.from('users').delete().eq('id', nuevoUser.id)
+        console.error('Error creando cliente:', errorCliente)
+        throw new Error('Error al crear cliente')
+      }
+
+      console.log('✅ Cliente creado exitosamente:', nuevoUser.id)
+      return nuevoUser.id
+
+    } catch (error: any) {
+      console.error('Error en verificarOCrearCliente:', error)
+      toast.error('Error al verificar/crear cliente', {
+        description: error.message
+      })
+      return null
+    }
+  },
+
+  
+
+  // venderBoletosPorWhatsApp: async (data: VentaWhatsAppData): Promise<OrdenBoleto | null> => {
+  //   const {
+  //     documento_identidad,
+  //     nombre,
+  //     phone,
+  //     agenciaId,
+  //     rifaId,
+  //     boletos,
+  //     totalPago,
+  //     metodoPago,
+  //     estadoPago = 'pagado'
+  //   } = data
+
+  //   set({
+  //     loading: true,
+  //     error: null,
+  //     mensaje: null,
+  //     whatsappEnviado: false,
+  //     errorWhatsApp: null
+  //   })
+
+  //   const loadingToast = toast.loading('Procesando venta por WhatsApp...', {
+  //     description: `Vendiendo ${boletos.length} boleto${boletos.length > 1 ? 's' : ''}`
+  //   })
+
+  //   try {
+  //     // 1-6: Validaciones y creación de orden (igual que antes)
+  //     if (boletos.length === 0) {
+  //       throw new Error('Debe seleccionar al menos un boleto')
+  //     }
+
+  //     const phoneRegex = /^\d{7,15}$/
+  //     if (!phoneRegex.test(phone)) {
+  //       throw new Error('Número de teléfono inválido (solo números, 7-15 dígitos)')
+  //     }
+
+  //     const precioBoleta = await get().obtenerPrecioBoleta(rifaId)
+  //     if (precioBoleta === null) {
+  //       throw new Error('No se pudo obtener el precio de la boleta')
+  //     }
+
+  //     const totalEsperado = get().calcularTotal(boletos.length, precioBoleta)
+  //     if (Math.abs(totalPago - totalEsperado) > 0.01) {
+  //       throw new Error(`El total debe ser $${totalEsperado.toLocaleString()}`)
+  //     }
+
+  //     const disponibles = await get().verificarDisponibilidadBoletos(boletos)
+  //     if (!disponibles) {
+  //       throw new Error('Algunos boletos ya no están disponibles')
+  //     }
+
+  //     const clienteId = await get().verificarOCrearCliente(
+  //       documento_identidad,
+  //       nombre,
+  //       phone
+  //     )
+
+  //     if (!clienteId) {
+  //       throw new Error('No se pudo verificar/crear el cliente')
+  //     }
+
+  //     const { data: orden, error: ordenError } = await supabase
+  //       .from('ordenes_boletos')
+  //       .insert([{
+  //         cliente_id: clienteId,
+  //         agencia_id: agenciaId,
+  //         rifa_id: rifaId,
+  //         cantidad_boletos: boletos.length,
+  //         total_pago: totalEsperado,
+  //         estado_pago: estadoPago,
+  //         metodo_pago: metodoPago,
+  //         enviado_whatsapp: false
+  //       }])
+  //       .select()
+  //       .single()
+
+  //     if (ordenError || !orden) {
+  //       throw new Error('Error al crear la orden de compra')
+  //     }
+
+  //     const { error: updateError } = await supabase
+  //       .from('boletos')
+  //       .update({
+  //         vendido: true,
+  //         vendido_a: clienteId,
+  //         vendido_por: agenciaId,
+  //         orden_id: orden.id,
+  //         fecha_venta: new Date().toISOString()
+  //       })
+  //       .in('id', boletos)
+
+  //     if (updateError) {
+  //       await supabase.from('ordenes_boletos').delete().eq('id', orden.id)
+  //       throw new Error('Error al actualizar los boletos')
+  //     }
+
+  //     // ✅ FASE 2: ENVIAR WHATSAPP VÍA EDGE FUNCTION
+  //     let whatsappEnviadoExitoso = false
+
+  //     try {
+  //       console.log('📱 FASE 2: Enviando WhatsApp vía Edge Function...')
+
+  //       // Obtener sesión actual
+  //       const { data: { session } } = await supabase.auth.getSession()
+
+  //       if (!session) {
+  //         throw new Error('No hay sesión activa')
+  //       }
+
+  //       // Llamar Edge Function
+  //       const { data: whatsappData, error: whatsappError } = await supabase.functions.invoke(
+  //         'enviar-whatsapp',
+  //         {
+  //           body: {
+  //             ordenId: orden.id,
+  //             phone: phone,
+  //             nombre: nombre
+  //           }
+  //         }
+  //       )
+
+  //       if (whatsappError) {
+  //         console.error('❌ Error en Edge Function:', whatsappError)
+  //         throw new Error(whatsappError.message || 'Error al enviar WhatsApp')
+  //       }
+
+  //       if (!whatsappData?.success) {
+  //         throw new Error(whatsappData?.error || 'Error al enviar WhatsApp')
+  //       }
+
+  //       console.log('✅ WhatsApp enviado exitosamente:', whatsappData)
+  //       whatsappEnviadoExitoso = true
+  //       set({ whatsappEnviado: true })
+
+  //     } catch (whatsappError: any) {
+  //       console.error('❌ Error crítico enviando WhatsApp:', whatsappError)
+
+  //       // 🔴 ROLLBACK COMPLETO
+  //       console.log('🔄 Iniciando ROLLBACK de venta...')
+
+  //       // Restaurar boletos
+  //       await supabase.from('boletos').update({
+  //         vendido: false,
+  //         vendido_a: null,
+  //         vendido_por: null,
+  //         orden_id: null,
+  //         fecha_venta: null
+  //       }).in('id', boletos)
+
+  //       // Eliminar orden
+  //       await supabase.from('ordenes_boletos').delete().eq('id', orden.id)
+
+  //       set({ errorWhatsApp: whatsappError.message })
+
+  //       throw new Error(`No se pudo enviar WhatsApp. Venta cancelada. Detalle: ${whatsappError.message}`)
+  //     }
+
+  //     // Mensaje de éxito
+  //     const mensajeExito = `Venta por WhatsApp realizada: ${boletos.length} boleto${boletos.length > 1 ? 's' : ''} vendido${boletos.length > 1 ? 's' : ''} a ${nombre} (${phone}). Total: $${totalEsperado.toLocaleString()}. ✅ WhatsApp enviado exitosamente`
+
+  //     toast.success('¡Venta exitosa!', {
+  //       description: mensajeExito,
+  //       duration: 6000
+  //     })
+
+  //     toast.dismiss(loadingToast)
+
+  //     set({
+  //       mensaje: mensajeExito,
+  //       ultimaVenta: orden,
+  //       loading: false
+  //     })
+
+  //     return orden
+
+  //   } catch (err: any) {
+  //     const errorMessage = err.message || 'Error desconocido en la venta'
+  //     console.error('Error en venta por WhatsApp:', err)
+
+  //     toast.error('Error en la venta', {
+  //       description: errorMessage,
+  //       duration: 5000
+  //     })
+
+  //     toast.dismiss(loadingToast)
+
+  //     set({
+  //       error: errorMessage,
+  //       loading: false,
+  //       errorWhatsApp: errorMessage
+  //     })
+
+  //     return null
+  //   }
+  // },
+
+  venderBoletosPorWhatsApp: async (data: VentaWhatsAppData): Promise<OrdenBoleto | null> => {
+    const {
+      documento_identidad,
+      nombre,
+      phone,
+      agenciaId,
+      rifaId,
+      boletos,
+      totalPago,
+      metodoPago,
+      estadoPago = 'pagado'
+    } = data
+
+    set({
+      loading: true,
+      error: null,
+      mensaje: null,
+      whatsappEnviado: false,
+      errorWhatsApp: null
+    })
+
+    const loadingToast = toast.loading('Procesando venta por WhatsApp...', {
+      description: `Vendiendo ${boletos.length} boleto${boletos.length > 1 ? 's' : ''}`
+    })
+
+    try {
+      // ============================================================================
+      // PASO 1-6: VALIDACIONES Y CREACIÓN DE ORDEN (igual que antes)
+      // ============================================================================
+
+      if (boletos.length === 0) {
+        throw new Error('Debe seleccionar al menos un boleto')
+      }
+
+      if (!phone || !phone.startsWith('+')) {
+        throw new Error('Número de teléfono inválido (debe incluir código de país)')
+      }
+
+      const precioBoleta = await get().obtenerPrecioBoleta(rifaId)
+      if (precioBoleta === null) {
+        throw new Error('No se pudo obtener el precio de la boleta')
+      }
+
+      const totalEsperado = get().calcularTotal(boletos.length, precioBoleta)
+      if (Math.abs(totalPago - totalEsperado) > 0.01) {
+        throw new Error(`El total debe ser $${totalEsperado.toLocaleString()}`)
+      }
+
+      const disponibles = await get().verificarDisponibilidadBoletos(boletos)
+      if (!disponibles) {
+        throw new Error('Algunos boletos ya no están disponibles')
+      }
+
+      const clienteId = await get().verificarOCrearCliente(
+        documento_identidad,
+        nombre,
+        phone
+      )
+
+      if (!clienteId) {
+        throw new Error('No se pudo verificar/crear el cliente')
+      }
+
+      console.log('📝 Creando orden...')
+
+      const { data: orden, error: ordenError } = await supabase
+        .from('ordenes_boletos')
+        .insert([{
+          cliente_id: clienteId,
+          agencia_id: agenciaId,
+          rifa_id: rifaId,
+          cantidad_boletos: boletos.length,
+          total_pago: totalEsperado,
+          estado_pago: estadoPago,
+          metodo_pago: metodoPago,
+          enviado_whatsapp: false
+        }])
+        .select()
+        .single()
+
+      if (ordenError || !orden) {
+        throw new Error('Error al crear la orden de compra')
+      }
+
+      console.log('✅ Orden creada:', orden.id)
+
+      const { error: updateError } = await supabase
+        .from('boletos')
+        .update({
+          vendido: true,
+          vendido_a: clienteId,
+          vendido_por: agenciaId,
+          orden_id: orden.id,
+          fecha_venta: new Date().toISOString()
+        })
+        .in('id', boletos)
+
+      if (updateError) {
+        console.error('❌ Error al actualizar boletos, haciendo rollback...')
+        await supabase.from('ordenes_boletos').delete().eq('id', orden.id)
+        throw new Error('Error al actualizar los boletos')
+      }
+
+      console.log('✅ Boletos actualizados')
+
+      // ============================================================================
+      // PASO 7: ENVIAR WHATSAPP VÍA EDGE FUNCTION
+      // ============================================================================
+
+      let whatsappEnviadoExitoso = false
+
+      try {
+        console.log('📱 FASE 2: Enviando WhatsApp vía Edge Function...')
+
+        // Obtener sesión actual
+        const { data: { session } } = await supabase.auth.getSession()
+
+        if (!session) {
+          throw new Error('No hay sesión activa')
+        }
+
+        // ✅ Llamar Edge Function
+        const { data: whatsappData, error: whatsappError } = await supabase.functions.invoke(
+          'enviar-whatsapp',
+          {
+            body: {
+              ordenId: orden.id,
+              phone: phone,
+              nombre: nombre
+            }
+          }
+        )
+
+        if (whatsappError) {
+          console.error('❌ Error en Edge Function:', whatsappError)
+          throw new Error(whatsappError.message || 'Error al enviar WhatsApp')
+        }
+
+        if (!whatsappData?.success) {
+          console.error('❌ Edge Function retornó error:', whatsappData)
+          throw new Error(whatsappData?.error || 'Error al enviar WhatsApp')
+        }
+
+        console.log('✅ WhatsApp enviado exitosamente:', whatsappData)
+        whatsappEnviadoExitoso = true
+        set({ whatsappEnviado: true })
+
+      } catch (whatsappError: any) {
+        console.error('❌ Error crítico enviando WhatsApp:', whatsappError)
+
+        // ============================================================================
+        // ROLLBACK COMPLETO
+        // ============================================================================
+        console.log('🔄 Iniciando ROLLBACK de venta...')
+
+        // Restaurar boletos
+        await supabase.from('boletos').update({
+          vendido: false,
+          vendido_a: null,
+          vendido_por: null,
+          orden_id: null,
+          fecha_venta: null
+        }).in('id', boletos)
+
+        // Eliminar orden
+        await supabase.from('ordenes_boletos').delete().eq('id', orden.id)
+
+        console.log('🔄 ROLLBACK completado')
+
+        set({ errorWhatsApp: whatsappError.message })
+
+        throw new Error(`No se pudo enviar WhatsApp. Venta cancelada. Detalle: ${whatsappError.message}`)
+      }
+
+      // ============================================================================
+      // PASO 8: ÉXITO
+      // ============================================================================
+
+      const mensajeExito = `Venta por WhatsApp realizada: ${boletos.length} boleto${boletos.length > 1 ? 's' : ''} vendido${boletos.length > 1 ? 's' : ''} a ${nombre} (${phone}). Total: $${totalEsperado.toLocaleString()}. ✅ WhatsApp enviado exitosamente`
+
+      toast.success('¡Venta exitosa!', {
+        description: mensajeExito,
+        duration: 6000
+      })
+
+      toast.dismiss(loadingToast)
+
+      set({
+        mensaje: mensajeExito,
+        ultimaVenta: orden,
+        loading: false
+      })
+
+      return orden
+
+    } catch (err: any) {
+      const errorMessage = err.message || 'Error desconocido en la venta'
+      console.error('❌ Error en venta por WhatsApp:', err)
+
+      toast.error('Error en la venta', {
+        description: errorMessage,
+        duration: 5000
+      })
+
+      toast.dismiss(loadingToast)
+
+      set({
+        error: errorMessage,
+        loading: false,
+        errorWhatsApp: errorMessage
+      })
+
+      return null
+    }
+  },
 
   /**
    * Verifica si el cliente tiene un email válido
@@ -1121,7 +1629,9 @@ export const useVentaStore = create<VentaStore>((set, get) => ({
       mensaje: null,
       ultimaVenta: null,
       emailEnviado: false,
-      errorEmail: null
+      errorEmail: null,
+      whatsappEnviado: false,
+      errorWhatsApp: null
     })
   }
 }))

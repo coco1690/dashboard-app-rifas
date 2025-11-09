@@ -682,13 +682,13 @@ export const useUserListStore = create<UserListState>((set, get) => ({
     }
 
     // Cache de 5 minutos (300000ms) - solo si ya tenemos datos y el cache es válido
-    if (state.agenciasLoaded &&
-      state.agencias.length > 0 &&
-      state.lastFetchAgencias &&
-      (now - state.lastFetchAgencias) < 300000) {
-      console.log('📋 fetchAgencias: usando cache (válido por 5 minutos)')
-      return
-    }
+    // if (state.agenciasLoaded &&
+    //   state.agencias.length > 0 &&
+    //   state.lastFetchAgencias &&
+    //   (now - state.lastFetchAgencias) < 300000) {
+    //   console.log('📋 fetchAgencias: usando cache (válido por 5 minutos)')
+    //   return
+    // }
 
     console.log('🔍 fetchAgencias: consultando servidor')
     set({ loading: true, error: null })
@@ -712,6 +712,7 @@ export const useUserListStore = create<UserListState>((set, get) => ({
           user_type
         )
       `)
+      .order('created_at', { ascending: false }) 
 
       if (error) {
         set({ error: error.message, loading: false })
@@ -755,6 +756,7 @@ export const useUserListStore = create<UserListState>((set, get) => ({
           admin_id,
           user:users (
             id,
+            documento_identidad,
             nombre,
             email,
             phone,

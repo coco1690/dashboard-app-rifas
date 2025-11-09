@@ -11,6 +11,7 @@ import { toast } from 'sonner'
 import { ClienteInfoForm } from '../components/ClienteInfoForm'
 import { ChangePasswordDialog } from '../components/ChangePasswordDialog'
 import { DeleteClientDialog } from '../components/DeleteClientDialog'
+// import type { Country } from '@/lib/countries'
 
 
 export const AdminViewClientIdPage = () => {
@@ -186,6 +187,16 @@ export const AdminViewClientIdPage = () => {
         }
     }
 
+    const handlePhoneChange = (
+        fullNumber: string,
+        // country: Country
+    ) => {
+        setFormData({
+            ...formData,
+            phone: fullNumber // +573001234567
+        })
+    }
+
     // Loading state
     if (loading && !selectedCliente) {
         return (
@@ -283,6 +294,7 @@ export const AdminViewClientIdPage = () => {
                         onEdit={() => setIsEditing(true)}
                         onChange={handleChange}
                         onSelectChange={handleSelectChange}
+                        onPhoneChange={handlePhoneChange}
                         onSave={handleSave}
                         onCancel={handleCancel}
                     />
