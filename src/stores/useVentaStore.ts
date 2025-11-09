@@ -852,7 +852,7 @@ export const useVentaStore = create<VentaStore>((set, get) => ({
     }
   },
 
-  
+
 
   // venderBoletosPorWhatsApp: async (data: VentaWhatsAppData): Promise<OrdenBoleto | null> => {
   //   const {
@@ -1159,8 +1159,6 @@ export const useVentaStore = create<VentaStore>((set, get) => ({
       // PASO 7: ENVIAR WHATSAPP VÍA EDGE FUNCTION
       // ============================================================================
 
-      let whatsappEnviadoExitoso = false
-
       try {
         console.log('📱 FASE 2: Enviando WhatsApp vía Edge Function...')
 
@@ -1194,7 +1192,6 @@ export const useVentaStore = create<VentaStore>((set, get) => ({
         }
 
         console.log('✅ WhatsApp enviado exitosamente:', whatsappData)
-        whatsappEnviadoExitoso = true
         set({ whatsappEnviado: true })
 
       } catch (whatsappError: any) {
