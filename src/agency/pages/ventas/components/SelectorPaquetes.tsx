@@ -508,10 +508,12 @@ const SelectorPaquetes: React.FC<SelectorPaquetesProps> = ({
     calcularTotal,
     venderBoletos,
     venderBoletosPorWhatsApp,
+    venderBoletosPorSMS,
     loading,
     error,
     mensaje,
     errorWhatsApp,
+    errorSMS,
     limpiarMensajes
   } = useVentaStore()
 
@@ -522,7 +524,7 @@ const SelectorPaquetes: React.FC<SelectorPaquetesProps> = ({
   const [paqueteSeleccionado, setPaqueteSeleccionado] = useState(10)
   const [cantidadPersonalizada, setCantidadPersonalizada] = useState(1)
   const [boletosSeleccionados, setBoletosSeleccionados] = useState<string[]>([])
-  const [tipoVenta, setTipoVenta] = useState<'email' | 'whatsapp'>('email')
+  const [tipoVenta, setTipoVenta] = useState<'email' | 'whatsapp' | 'sms'>('email')
   const [cedula, setCedula] = useState('')
   const [enviarEmail, setEnviarEmail] = useState(true)
   const [documento, setDocumento] = useState('')
@@ -612,7 +614,7 @@ const SelectorPaquetes: React.FC<SelectorPaquetesProps> = ({
     cargarPrecio()
   }
 
-  const handleTipoVentaChange = (valor: 'email' | 'whatsapp') => {
+  const handleTipoVentaChange = (valor: 'email' | 'whatsapp' | 'sms') => {
     setTipoVenta(valor)
     setCedula('')
     setDocumento('')
@@ -621,11 +623,59 @@ const SelectorPaquetes: React.FC<SelectorPaquetesProps> = ({
     setPaisWhatsApp(null)
   }
 
+  // const handleVenta = async () => {
+  //   if (!isFormValid) return
+
+  //   let resultado
+  //   if (tipoVenta === 'whatsapp') {
+  //     resultado = await venderBoletosPorWhatsApp({
+  //       documento_identidad: documento,
+  //       nombre: nombreCliente,
+  //       phone: whatsapp,
+  //       agenciaId,
+  //       rifaId,
+  //       boletos: boletosSeleccionados,
+  //       totalPago: totalCalculado,
+  //       metodoPago,
+  //       estadoPago
+  //     })
+  //   } else {
+  //     resultado = await venderBoletos({
+  //       documento_identidad: cedula,
+  //       agenciaId,
+  //       rifaId,
+  //       boletos: boletosSeleccionados,
+  //       totalPago: totalCalculado,
+  //       metodoPago,
+  //       estadoPago,
+  //       enviarEmail
+  //     })
+  //   }
+
+  //   if (resultado) {
+  //     await fetchEstadisticasRifa(rifaId)
+  //     setLocalRefreshKey(prev => prev + 1)
+  //     setTimeout(resetearFormulario, 100)
+  //   }
+  // }
+
   const handleVenta = async () => {
     if (!isFormValid) return
 
     let resultado
-    if (tipoVenta === 'whatsapp') {
+    if (tipoVenta === 'sms') {
+      resultado = await venderBoletosPorSMS({
+        documento_identidad: documento,
+        nombre: nombreCliente,
+        phone: whatsapp,
+        agenciaId,
+        rifaId,
+        boletos: boletosSeleccionados,
+        totalPago: totalCalculado,
+        metodoPago,
+        estadoPago
+      })
+    } else if (tipoVenta === 'whatsapp') {
       resultado = await venderBoletosPorWhatsApp({
         documento_identidad: documento,
         nombre: nombreCliente,
@@ -698,6 +748,7 @@ const SelectorPaquetes: React.FC<SelectorPaquetesProps> = ({
       <CardContent className="space-y-6">
         {error && <Alert variant="destructive"><AlertCircle className="h-4 w-4" /><AlertDescription>{error}</AlertDescription></Alert>}
         {errorWhatsApp && tipoVenta === 'whatsapp' && <Alert variant="destructive"><AlertCircle className="h-4 w-4" /><AlertDescription>{errorWhatsApp}</AlertDescription></Alert>}
+        {errorSMS && tipoVenta === 'sms' && <Alert variant="destructive"><AlertCircle className="h-4 w-4" /><AlertDescription>{errorSMS}</AlertDescription></Alert>}
         {mensaje && <Alert><CheckCircle2 className="h-4 w-4" /><AlertDescription>{mensaje}</AlertDescription></Alert>}
         {errorPrecio && <Alert variant="destructive"><AlertCircle className="h-4 w-4" /><AlertDescription>{errorPrecio}</AlertDescription></Alert>}
 
@@ -751,28 +802,27 @@ const SelectorPaquetes: React.FC<SelectorPaquetesProps> = ({
           />
         </div>
 
-        {/* ✅ MOSTRAR PAÍS SELECCIONADO (esto usa paisWhatsApp) */}
-        {tipoVenta === 'whatsapp' && paisWhatsApp && whatsapp && (
-          <Card className="border-green-200 bg-green-50">
+        {/* ✅ MOSTRAR PAÍS SELECCIONADO (para WhatsApp y SMS) */}
+        {(tipoVenta === 'whatsapp' || tipoVenta === 'sms') && paisWhatsApp && whatsapp && (
+          <Card className={tipoVenta === 'sms' ? 'border-purple-200 bg-purple-50' : 'border-green-200 bg-green-50'}>
             <CardContent className="pt-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  {/* ✅ Usar FlagIcon con Twemoji */}
                   <FlagIcon
                     countryCode={paisWhatsApp.code}
                     size="xl"
                     className="shadow-sm"
                   />
                   <div>
-                    <p className="text-sm font-semibold text-green-900">
+                    <p className={`text-sm font-semibold ${tipoVenta === 'sms' ? 'text-purple-900' : 'text-green-900'}`}>
                       País seleccionado: {paisWhatsApp.name}
                     </p>
-                    <p className="text-xs text-green-700">
+                    <p className={`text-xs ${tipoVenta === 'sms' ? 'text-purple-700' : 'text-green-700'}`}>
                       Código: {paisWhatsApp.dial} • Número completo: {whatsapp}
                     </p>
                   </div>
                 </div>
-                <Badge variant="outline" className="bg-white text-green-700 border-green-300">
+                <Badge variant="outline" className={tipoVenta === 'sms' ? 'bg-white text-purple-700 border-purple-300' : 'bg-white text-green-700 border-green-300'}>
                   ✓ Válido
                 </Badge>
               </div>
@@ -780,7 +830,7 @@ const SelectorPaquetes: React.FC<SelectorPaquetesProps> = ({
           </Card>
         )}
 
-        
+
         <SelectorBoletosReservados
           key={rifaId}
           rifaId={rifaId}

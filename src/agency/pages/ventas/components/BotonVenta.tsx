@@ -1,9 +1,9 @@
 import React from 'react'
 import { Button } from '@/components/ui/button'
-import { RefreshCw, MessageCircle, Mail } from 'lucide-react'
+import { RefreshCw, MessageCircle, Mail, MessageSquare } from 'lucide-react'
 
 interface BotonVentaProps {
-  tipoVenta: 'email' | 'whatsapp'
+  tipoVenta: 'email' | 'whatsapp' | 'sms'
   cantidad: number
   total: number
   loading: boolean
@@ -23,7 +23,13 @@ export const BotonVenta: React.FC<BotonVentaProps> = ({
     <Button
       onClick={onClick}
       disabled={disabled || loading}
-      className="w-full"
+      className={`w-full ${
+        tipoVenta === 'whatsapp' 
+          ? 'bg-green-400 hover:bg-green-700' 
+          : tipoVenta === 'sms' 
+          ? 'bg-purple-400 hover:bg-purple-700' 
+          : ''
+      }`}
       size="lg"
     >
       {loading ? (
@@ -33,12 +39,16 @@ export const BotonVenta: React.FC<BotonVentaProps> = ({
         </>
       ) : (
         <>
-          {tipoVenta === 'whatsapp' ? (
-            <MessageCircle className="h-4 w-4 mr-2" />
-          ) : (
-            <Mail className="h-4 w-4 mr-2" />
-          )}
-          Vender por {tipoVenta === 'whatsapp' ? 'WhatsApp' : 'Email'} - 
+          {tipoVenta === 'whatsapp' && <MessageCircle className="h-4 w-4 mr-2" />}
+          {tipoVenta === 'sms' && <MessageSquare className="h-4 w-4 mr-2" />}
+          {tipoVenta === 'email' && <Mail className="h-4 w-4 mr-2" />}
+          Vender por {
+            tipoVenta === 'whatsapp' 
+              ? 'WhatsApp' 
+              : tipoVenta === 'sms' 
+              ? 'SMS' 
+              : 'Email'
+          } - 
           {` ${cantidad} Boletos - $${total.toLocaleString()}`}
         </>
       )}
