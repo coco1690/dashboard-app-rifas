@@ -11,7 +11,8 @@ import {
   UserCircle,
   TrendingUp,
   DollarSign,
-  Building2
+  Building2,
+  History
 } from 'lucide-react';
 import { CustomLogo } from '@/components/custom/CustomLogo';
 import { useAuthStore } from '@/stores/authStore';
@@ -35,7 +36,8 @@ const getMenuItemsByRole = (userRole: string) => {
         { icon: Ticket, label: 'Rifas', to: '/admin/admin_rifas' },
         { icon: ShoppingCart, label: 'Ordenes', to: '/admin/ordenes' },
         { icon: Repeat, label: 'Recargas', to: '/admin/recargas' },
-        { icon: TrendingUp, label: 'Historial', to: '/admin/admin_historial' },
+        { icon: TrendingUp, label: 'Estadísticas', to: '/admin/estadisticas_agencias' },
+        { icon: History, label: 'Historial', to: '/admin/admin_historial' },
       ];
 
     case 'agencia':
@@ -44,7 +46,7 @@ const getMenuItemsByRole = (userRole: string) => {
         { icon: UserCircle, label: 'Clientes', to: '/agency/clients' },
         // { icon: Ticket, label: 'Rifas Activas', to: '/agency/rifas_activas' },
         { icon: DollarSign, label: 'Ventas', to: '/agency/ventas' },
-        { icon: TrendingUp, label: 'Historial', to: '/agency/historial' },
+        { icon: History, label: 'Historial', to: '/agency/historial' },
         { icon: ShoppingCart, label: 'Ordenes', to: '/agency/ordenes' },
       ];
 
@@ -302,7 +304,7 @@ export const BottomNavigation: React.FC = () => {
   }, [user?.user_type]);
 
   const menuItems = useMemo(() => {
-    return getMenuItemsByRole(userRole).slice(0, 7); // Limitar a 5 items para móvil
+    return getMenuItemsByRole(userRole).slice(0, 8); // Limitar a 7 items para móvil
   }, [userRole]);
 
   const isActiveRoute = (to: string) => {

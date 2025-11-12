@@ -31,6 +31,7 @@ import { AdminRifasEditPage } from "./admin/pages/rifas/page/AdminRifasEditPage"
 import { AdminClientesPage } from "./admin/pages/clientes/AdminClientesPage";
 import CrearClientePage from "./admin/pages/clientes/CrearClientePage";
 import { AdminViewClientIdPage } from "./admin/pages/clientes/page/AdminViewClientIdPage";
+import EstadisticasAgenciasPage from "./admin/pages/estadisticas_agencias/EstadisticasagenciasPage";
 
 
 
@@ -161,6 +162,10 @@ export const appRouter = createBrowserRouter([
             {
                 path: 'admin_clientes/:id',
                 element: <AdminViewClientIdPage />
+            },
+            {
+                path: 'estadisticas_agencias',
+                element: <EstadisticasAgenciasPage />
             },
 
         ]
