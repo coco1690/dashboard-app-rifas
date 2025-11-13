@@ -562,13 +562,15 @@ type UserListState = {
   clientes: UserSummary[]
   agencias: AgencyDetails[]
   selectedAgencia: AgencyDetails | null
-  selectedCliente: ClientDetails | null
+  selectedClientes: ClientDetails[] | null
   loading: boolean
   error: string | null
   agenciasLoaded: boolean
   clientesLoaded: boolean
   lastFetchAgencias: number | null
   user?: UserSummary // Added user property
+
+
 
   // Funciones de lectura
   fetchClientes: () => Promise<void>
@@ -586,17 +588,55 @@ type UserListState = {
   deleteAgencia: (userId: string) => Promise<boolean>
   deleteCliente: (userId: string) => Promise<boolean>
 
-  searchCliente: (searchTerm: string) => Promise<ClientDetails | null>
+  searchCliente: (searchTerm: string) => Promise<ClientDetails[] | null>
 
   // Función para resetear el estado
   reset: () => void
 }
 
+// // Función helper para normalizar teléfonos 
+// const normalizePhone = (phone: string): string[] => {
+//   // Quitar espacios y caracteres especiales
+//   const cleaned = phone.replace(/[\s\-\(\)]/g, '')
+
+//   const variants: string[] = [cleaned]
+
+//   // Si tiene +593, agregar también sin el prefijo
+//   if (cleaned.startsWith('+593')) {
+//     const withoutPrefix = cleaned.replace('+593', '')
+//     variants.push(withoutPrefix)
+//     variants.push(`0${withoutPrefix}`)
+//     variants.push(cleaned.replace('+593', '593'))
+//   }
+//   // Si empieza con 593 (sin +), agregar con +
+//   else if (cleaned.startsWith('593') && !cleaned.startsWith('+')) {
+//     variants.push(`+${cleaned}`)
+//     const withoutPrefix = cleaned.replace('593', '')
+//     variants.push(`0${withoutPrefix}`)
+//     variants.push(withoutPrefix)
+//   }
+//   // Si empieza con 0, agregar con +593
+//   else if (cleaned.startsWith('0')) {
+//     const withoutZero = cleaned.substring(1)
+//     variants.push(withoutZero)
+//     variants.push(`+593${withoutZero}`)
+//     variants.push(`593${withoutZero}`)
+//   }
+//   // Si no tiene prefijo, agregar todas las versiones
+//   else {
+//     variants.push(`0${cleaned}`)
+//     variants.push(`+593${cleaned}`)
+//     variants.push(`593${cleaned}`)
+//   }
+
+//   return [...new Set(variants)] // Eliminar duplicados
+// }
+
 export const useUserListStore = create<UserListState>((set, get) => ({
   clientes: [],
   agencias: [],
   selectedAgencia: null,
-  selectedCliente: null,
+  selectedClientes: [],
   loading: false,
   error: null,
   agenciasLoaded: false,
@@ -712,7 +752,7 @@ export const useUserListStore = create<UserListState>((set, get) => ({
           user_type
         )
       `)
-      .order('created_at', { ascending: false }) 
+        .order('created_at', { ascending: false })
 
       if (error) {
         set({ error: error.message, loading: false })
@@ -816,7 +856,7 @@ export const useUserListStore = create<UserListState>((set, get) => ({
 
       if (error || !data) {
         set({
-          selectedCliente: null,
+          selectedClientes: null,
           error: error?.message || 'No se encontró el cliente',
           loading: false
         })
@@ -826,11 +866,11 @@ export const useUserListStore = create<UserListState>((set, get) => ({
           user: Array.isArray(data.user) ? data.user[0] : data.user
         } as ClientDetails
 
-        set({ selectedCliente: clienteData, loading: false })
+        set({ selectedClientes: [clienteData], loading: false })
       }
     } catch (err) {
       set({
-        selectedCliente: null,
+        selectedClientes: null,
         error: err instanceof Error ? err.message : 'Error desconocido',
         loading: false
       })
@@ -1119,40 +1159,69 @@ export const useUserListStore = create<UserListState>((set, get) => ({
     set({ loading: true, error: null })
 
     try {
-      // Buscar usuario primero
-      const { data: userData, error: userError } = await supabase
+      const trimmedSearch = searchTerm.trim()
+
+      // Detectar si es solo números (puede ser teléfono O documento)
+      const isNumeric = /^[\d\+\-\s\(\)]+$/.test(trimmedSearch)
+
+      let query = supabase
         .from('users')
         .select('id, documento_identidad, nombre, email, phone, user_type')
         .eq('user_type', 'cliente')
-        .or(`documento_identidad.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%,nombre.ilike.%${searchTerm}%`)
-        .limit(1)
-        .maybeSingle()
+
+      if (isNumeric) {
+        // ✅ Buscar en TELÉFONO Y DOCUMENTO cuando es numérico
+        const cleanedNumber = trimmedSearch.replace(/[\s\-\(\)\+]/g, '')
+        console.log('🔍 Buscando en teléfono Y documento:', cleanedNumber)
+
+        // Buscar en phone O documento_identidad
+        query = query.or(`phone.ilike.%${cleanedNumber}%,documento_identidad.ilike.%${cleanedNumber}%`)
+      } else {
+        // Buscar por documento, email o nombre (texto)
+        query = query.or(`documento_identidad.ilike.%${trimmedSearch}%,email.ilike.%${trimmedSearch}%,nombre.ilike.%${trimmedSearch}%`)
+      }
+
+      const { data: usersData, error: userError } = await query
 
       if (userError) throw userError
-      if (!userData) {
-        set({ loading: false, error: 'Cliente no encontrado' })
+
+      if (!usersData || usersData.length === 0) {
+        set({ loading: false, error: 'No se encontraron clientes' })
         return null
       }
 
-      // Obtener datos del cliente
-      const { data: clienteData, error: clienteError } = await supabase
+      console.log(`✅ Encontrados ${usersData.length} usuario(s):`, usersData.map(u => ({
+        nombre: u.nombre,
+        phone: u.phone,
+        documento: u.documento_identidad
+      })))
+
+      // Obtener datos de clientes para todos los usuarios encontrados
+      const { data: clientesData, error: clienteError } = await supabase
         .from('clientes')
         .select('user_id, direccion, ciudad, agencia_id, created_at')
-        .eq('user_id', userData.id)
-        .single()
+        .in('user_id', usersData.map(u => u.id))
 
       if (clienteError) throw clienteError
 
-      const clienteCompleto = {
-        ...clienteData,
-        user: userData
-      }
+      // Combinar datos
+      const clientesCompletos = usersData.map(user => {
+        const clienteInfo = clientesData?.find(c => c.user_id === user.id)
+        return {
+          ...clienteInfo,
+          user
+        }
+      }).filter(c => c.user_id) as ClientDetails[]
 
-      set({ selectedCliente: clienteCompleto, loading: false })
-      return clienteCompleto
+      console.log(`✅ ${clientesCompletos.length} cliente(s) completo(s)`)
+
+      set({ loading: false, error: null })
+      return clientesCompletos
     } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : 'Error desconocido'
+      console.error('❌ Error en búsqueda:', errorMsg)
       set({
-        error: err instanceof Error ? err.message : 'Error desconocido',
+        error: errorMsg,
         loading: false
       })
       return null
@@ -1164,7 +1233,7 @@ export const useUserListStore = create<UserListState>((set, get) => ({
       clientes: [],
       agencias: [],
       selectedAgencia: null,
-      selectedCliente: null,
+      selectedClientes: [],
       loading: false,
       error: null,
       agenciasLoaded: false,
