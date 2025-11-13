@@ -32,32 +32,36 @@ interface EmailStore {
   ultimoEmailEnviado: EmailEnviado | null
   historialEmails: EmailEnviado[]
   estadisticas: EmailEstadisticas | null
-  
+
   // Acciones principales
   enviarConfirmacionCompra: (ordenId: string) => Promise<boolean>
-  
+
   // Gestión del historial
-  obtenerHistorialEmails: (filtros?: { 
+  obtenerHistorialEmails: (filtros?: {
     ordenId?: string
     tipo?: string
     estado?: string
     limite?: number
   }) => Promise<EmailEnviado[]>
-  
+
   // Estadísticas
   obtenerEstadisticasEmails: (agenciaId?: string) => Promise<EmailEstadisticas | null>
-  
+
   // Utilidades
   validarEmailCliente: (clienteId: string) => Promise<{ valido: boolean; email?: string }>
   reenviarEmail: (emailId: string) => Promise<boolean>
-  
+
   // Gestión de estado
   limpiarError: () => void
   resetearEstado: () => void
-  
+
   // Funciones auxiliares
   obtenerEmailPorOrden: (ordenId: string) => Promise<EmailEnviado | null>
   marcarEmailComoFallido: (emailId: string, errorMensaje: string) => Promise<void>
+  reenviarNotificaciones: (
+    ordenId: string,
+    metodos: { email: boolean; whatsapp: boolean; sms: boolean }
+  ) => Promise<{ email: boolean; whatsapp: boolean; sms: boolean }>
 }
 
 export const useEmailStore = create<EmailStore>((set, get) => ({
@@ -122,7 +126,7 @@ export const useEmailStore = create<EmailStore>((set, get) => ({
         intentos: 1
       }
 
-      set({ 
+      set({
         enviandoEmail: false,
         ultimoEmailEnviado: nuevoEmail,
         historialEmails: [nuevoEmail, ...get().historialEmails]
@@ -141,9 +145,9 @@ export const useEmailStore = create<EmailStore>((set, get) => ({
 
       toast.dismiss(loadingToast)
 
-      set({ 
+      set({
         error: errorMessage,
-        enviandoEmail: false 
+        enviandoEmail: false
       })
 
       return false
@@ -173,9 +177,9 @@ export const useEmailStore = create<EmailStore>((set, get) => ({
         return { valido: false }
       }
 
-      return { 
-        valido: true, 
-        email: cliente.email 
+      return {
+        valido: true,
+        email: cliente.email
       }
 
     } catch (error) {
@@ -324,7 +328,7 @@ export const useEmailStore = create<EmailStore>((set, get) => ({
 
       // Reenviar usando la orden ID
       const exito = await get().enviarConfirmacionCompra(emailData.orden_id)
-      
+
       set({ enviandoEmail: false })
       return exito
 
@@ -336,6 +340,215 @@ export const useEmailStore = create<EmailStore>((set, get) => ({
       set({ enviandoEmail: false, error: error.message })
       return false
     }
+  },
+
+  //  Reenviar notificaciones 
+  reenviarNotificaciones: async (
+    ordenId: string,
+    metodos: {
+      email: boolean
+      whatsapp: boolean
+      sms: boolean
+      nuevoPhone?: string  // ✅ NUEVO
+    }
+  ): Promise<{ email: boolean; whatsapp: boolean; sms: boolean }> => {
+    const resultados = {
+      email: false,
+      whatsapp: false,
+      sms: false
+    }
+
+    const loadingToast = toast.loading('Reenviando notificaciones...', {
+      description: 'Procesando solicitud'
+    })
+
+    try {
+      // ✅ NUEVO: Si hay nuevo teléfono, actualizar en BD primero
+      if (metodos.nuevoPhone) {
+        console.log('📱 Actualizando número de teléfono:', metodos.nuevoPhone)
+
+        // Obtener cliente_id de la orden
+        const { data: orden, error: ordenError } = await supabase
+          .from('ordenes_boletos')
+          .select('cliente_id')
+          .eq('id', ordenId)
+          .single()
+
+        if (!ordenError && orden) {
+          // Actualizar teléfono del cliente
+          const { error: updateError } = await supabase
+            .from('users')
+            .update({ phone: metodos.nuevoPhone })
+            .eq('id', orden.cliente_id)
+
+          if (updateError) {
+            console.error('Error actualizando teléfono:', updateError)
+            toast.warning('Advertencia', {
+              description: 'No se pudo actualizar el teléfono en la base de datos'
+            })
+          } else {
+            console.log('✅ Teléfono actualizado en BD')
+            toast.success('Teléfono actualizado', {
+              description: 'El número se actualizó correctamente'
+            })
+          }
+        }
+      }
+
+      // Reenviar Email
+      if (metodos.email) {
+        try {
+          resultados.email = await get().enviarConfirmacionCompra(ordenId)
+        } catch (error) {
+          console.error('Error reenviando email:', error)
+        }
+      }
+
+      // Reenviar WhatsApp
+      if (metodos.whatsapp) {
+        try {
+          const { data: orden, error: ordenError } = await supabase
+            .from('ordenes_boletos')
+            .select('id, cliente_id')
+            .eq('id', ordenId)
+            .single()
+
+          if (ordenError || !orden) {
+            throw new Error('No se pudo obtener datos de la orden')
+          }
+
+          const { data: cliente, error: clienteError } = await supabase
+            .from('users')
+            .select('nombre, phone')
+            .eq('id', orden.cliente_id)
+            .single()
+
+          if (clienteError || !cliente) {
+            throw new Error('No se pudo obtener datos del cliente')
+          }
+
+          // ✅ Usar el nuevo teléfono si se proporcionó
+          const phoneAUsar = metodos.nuevoPhone || cliente.phone
+
+          console.log('📱 Enviando WhatsApp a:', phoneAUsar)
+
+          const { data, error } = await supabase.functions.invoke('enviar-whatsapp', {
+            body: {
+              ordenId: ordenId,
+              phone: phoneAUsar,
+              nombre: cliente.nombre
+            }
+          })
+
+          if (error) {
+            throw new Error(error.message || 'Error al enviar WhatsApp')
+          }
+
+          if (!data?.success) {
+            throw new Error(data?.error || 'Error al enviar WhatsApp')
+          }
+
+          resultados.whatsapp = true
+
+          await supabase
+            .from('ordenes_boletos')
+            .update({ enviado_whatsapp: true })
+            .eq('id', ordenId)
+
+          console.log('✅ WhatsApp reenviado exitosamente')
+
+        } catch (error: any) {
+          console.error('❌ Error reenviando WhatsApp:', error)
+          toast.error('Error al enviar WhatsApp', {
+            description: error.message
+          })
+        }
+      }
+
+      // Reenviar SMS
+      if (metodos.sms) {
+        try {
+          const { data: orden, error: ordenError } = await supabase
+            .from('ordenes_boletos')
+            .select('id, cliente_id')
+            .eq('id', ordenId)
+            .single()
+
+          if (ordenError || !orden) {
+            throw new Error('No se pudo obtener datos de la orden')
+          }
+
+          const { data: cliente, error: clienteError } = await supabase
+            .from('users')
+            .select('nombre, phone')
+            .eq('id', orden.cliente_id)
+            .single()
+
+          if (clienteError || !cliente) {
+            throw new Error('No se pudo obtener datos del cliente')
+          }
+
+          // ✅ Usar el nuevo teléfono si se proporcionó
+          const phoneAUsar = metodos.nuevoPhone || cliente.phone
+
+          console.log('📱 Enviando SMS a:', phoneAUsar)
+
+          const { data, error } = await supabase.functions.invoke('enviar-sms', {
+            body: {
+              ordenId: ordenId,
+              phone: phoneAUsar,
+              nombre: cliente.nombre
+            }
+          })
+
+          if (error) {
+            throw new Error(error.message || 'Error al enviar SMS')
+          }
+
+          if (!data?.success) {
+            throw new Error(data?.error || 'Error al enviar SMS')
+          }
+
+          resultados.sms = true
+
+          await supabase
+            .from('ordenes_boletos')
+            .update({ enviado_sms: true })
+            .eq('id', ordenId)
+
+          console.log('✅ SMS reenviado exitosamente')
+
+        } catch (error: any) {
+          console.error('❌ Error reenviando SMS:', error)
+          toast.error('Error al enviar SMS', {
+            description: error.message
+          })
+        }
+      }
+
+      toast.dismiss(loadingToast)
+
+      // Toast de resumen
+      const exitosos = []
+      if (resultados.email) exitosos.push('Email')
+      if (resultados.whatsapp) exitosos.push('WhatsApp')
+      if (resultados.sms) exitosos.push('SMS')
+
+      if (exitosos.length > 0) {
+        toast.success('Notificaciones reenviadas', {
+          description: `${exitosos.join(', ')} enviado correctamente`,
+          duration: 4000
+        })
+      } else {
+        toast.error('No se pudo reenviar ninguna notificación')
+      }
+
+    } catch (error) {
+      toast.dismiss(loadingToast)
+      console.error('Error general reenviando notificaciones:', error)
+    }
+
+    return resultados
   },
 
   // Marcar email como fallido
@@ -373,8 +586,8 @@ export const useEmailStore = create<EmailStore>((set, get) => ({
 
 // Hook personalizado para facilitar el uso en componentes
 export const useEmailActions = () => {
-  const { 
-    enviarConfirmacionCompra, 
+  const {
+    enviarConfirmacionCompra,
     validarEmailCliente,
     reenviarEmail,
     enviandoEmail,
@@ -394,7 +607,7 @@ export const useEmailActions = () => {
 
 // Hook para estadísticas (útil para dashboards)
 export const useEmailStats = () => {
-  const { 
+  const {
     obtenerEstadisticasEmails,
     estadisticas,
     obtenerHistorialEmails,

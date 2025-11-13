@@ -556,6 +556,7 @@ interface OrdenBoletosCompleta {
     documento_identidad?: string
     agencia_nombre?: string
     rifa_nombre?: string
+    cliente_phone?: string
 }
 
 interface FiltrosOrdenes {
