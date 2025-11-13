@@ -263,7 +263,7 @@ export const AdminViewClientIdPage = () => {
                     >
                         <Key className="h-4 w-4" />
                         <span className="hidden sm:inline">Cambiar Contraseña</span>
-                        <span className="sm:hidden">Contraseña</span>
+                        <span className="sm:hidden">Cambiar Contraseña</span>
                     </Button>
                     <Button
                         variant="destructive"
