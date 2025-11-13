@@ -11,14 +11,12 @@ import { toast } from 'sonner'
 import { ClienteInfoForm } from '../components/ClienteInfoForm'
 import { ChangePasswordDialog } from '../components/ChangePasswordDialog'
 import { DeleteClientDialog } from '../components/DeleteClientDialog'
-// import type { Country } from '@/lib/countries'
-
 
 export const AdminViewClientIdPage = () => {
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
     const {
-        selectedCliente,
+        selectedClientes, // ✅ Array
         loading,
         error,
         fetchClienteById,
@@ -26,6 +24,9 @@ export const AdminViewClientIdPage = () => {
         deleteCliente,
         updatePassword
     } = useUserListStore()
+
+    // ✅ Obtener el primer cliente del array (esta página muestra UN cliente)
+    const cliente = selectedClientes?.[0] || null
 
     // Estados del formulario
     const [formData, setFormData] = useState({
@@ -49,22 +50,22 @@ export const AdminViewClientIdPage = () => {
         if (id) {
             fetchClienteById(id)
         }
-    }, [id])
+    }, [id, fetchClienteById])
 
     // Actualizar formulario cuando se carga el cliente
     useEffect(() => {
-        if (selectedCliente) {
+        if (cliente) {
             setFormData({
-                nombre: selectedCliente.user.nombre || '',
-                email: selectedCliente.user.email || '',
-                phone: selectedCliente.user.phone || '',
-                documento_identidad: selectedCliente.user.documento_identidad || '',
-                direccion: selectedCliente.direccion || '',
-                ciudad: selectedCliente.ciudad || '',
-                agencia_id: selectedCliente.agencia_id || ''
+                nombre: cliente.user.nombre || '',
+                email: cliente.user.email || '',
+                phone: cliente.user.phone || '',
+                documento_identidad: cliente.user.documento_identidad || '',
+                direccion: cliente.direccion || '',
+                ciudad: cliente.ciudad || '',
+                agencia_id: cliente.agencia_id || ''
             })
         }
-    }, [selectedCliente])
+    }, [cliente])
 
     // Handlers
     const handleBack = () => {
@@ -86,7 +87,7 @@ export const AdminViewClientIdPage = () => {
     }
 
     const handleSave = async () => {
-        if (!selectedCliente) return
+        if (!cliente) return
 
         setIsSaving(true)
         try {
@@ -103,14 +104,14 @@ export const AdminViewClientIdPage = () => {
                 agencia_id: formData.agencia_id || null
             }
 
-            const success = await updateCliente(selectedCliente.user_id, userData, clientData)
+            const success = await updateCliente(cliente.user_id, userData, clientData)
 
             if (success) {
                 toast.success('Cliente actualizado', {
                     description: 'Los cambios se guardaron correctamente'
                 })
                 setIsEditing(false)
-                fetchClienteById(selectedCliente.user_id)
+                fetchClienteById(cliente.user_id)
             } else {
                 toast.error('Error al actualizar', {
                     description: error || 'No se pudieron guardar los cambios'
@@ -127,24 +128,24 @@ export const AdminViewClientIdPage = () => {
 
     const handleCancel = () => {
         setIsEditing(false)
-        if (selectedCliente) {
+        if (cliente) {
             setFormData({
-                nombre: selectedCliente.user.nombre || '',
-                email: selectedCliente.user.email || '',
-                phone: selectedCliente.user.phone || '',
-                documento_identidad: selectedCliente.user.documento_identidad || '',
-                direccion: selectedCliente.direccion || '',
-                ciudad: selectedCliente.ciudad || '',
-                agencia_id: selectedCliente.agencia_id || ''
+                nombre: cliente.user.nombre || '',
+                email: cliente.user.email || '',
+                phone: cliente.user.phone || '',
+                documento_identidad: cliente.user.documento_identidad || '',
+                direccion: cliente.direccion || '',
+                ciudad: cliente.ciudad || '',
+                agencia_id: cliente.agencia_id || ''
             })
         }
     }
 
     const handleDelete = async () => {
-        if (!selectedCliente) return
+        if (!cliente) return
 
         try {
-            const success = await deleteCliente(selectedCliente.user_id)
+            const success = await deleteCliente(cliente.user_id)
 
             if (success) {
                 toast.success('Cliente eliminado', {
@@ -165,10 +166,10 @@ export const AdminViewClientIdPage = () => {
     }
 
     const handleChangePassword = async (newPassword: string) => {
-        if (!selectedCliente) return
+        if (!cliente) return
 
         try {
-            const success = await updatePassword(selectedCliente.user_id, newPassword)
+            const success = await updatePassword(cliente.user_id, newPassword)
 
             if (success) {
                 toast.success('Contraseña actualizada', {
@@ -187,18 +188,15 @@ export const AdminViewClientIdPage = () => {
         }
     }
 
-    const handlePhoneChange = (
-        fullNumber: string,
-        // country: Country
-    ) => {
+    const handlePhoneChange = (fullNumber: string) => {
         setFormData({
             ...formData,
-            phone: fullNumber // +573001234567
+            phone: fullNumber
         })
     }
 
     // Loading state
-    if (loading && !selectedCliente) {
+    if (loading && !cliente) {
         return (
             <div className="space-y-6">
                 <Skeleton className="h-10 w-48" />
@@ -221,7 +219,7 @@ export const AdminViewClientIdPage = () => {
     }
 
     // Error state
-    if (error && !selectedCliente) {
+    if (error && !cliente) {
         return (
             <div className="space-y-6">
                 <Button variant="ghost" onClick={handleBack}>
@@ -238,33 +236,42 @@ export const AdminViewClientIdPage = () => {
         )
     }
 
-    if (!selectedCliente) {
+    if (!cliente) {
         return null
     }
 
     return (
         <div className="space-y-6">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <Button variant="ghost" onClick={handleBack}>
-                    <ArrowLeft className="h-4 w-4 mr-2" />
-                    Volver a la lista
+            <div className="space-y-6">
+                {/* Botón Volver minimalista */}
+                <Button
+                    variant="ghost"
+                    onClick={handleBack}
+                    className="gap-2 -ml-2 hover:bg-transparent hover:text-primary group transition-colors"
+                >
+                    <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
+                    <span className="font-medium">Volver a la lista</span>
                 </Button>
 
-                <div className="flex gap-2">
+                {/* Acciones del cliente - alineadas a la derecha */}
+                <div className="flex items-center justify-end gap-2">
                     <Button
                         variant="outline"
                         onClick={() => setShowPasswordDialog(true)}
+                        className="gap-2"
                     >
-                        <Key className="h-4 w-4 mr-2" />
-                        Cambiar Contraseña
+                        <Key className="h-4 w-4" />
+                        <span className="hidden sm:inline">Cambiar Contraseña</span>
+                        <span className="sm:hidden">Contraseña</span>
                     </Button>
                     <Button
                         variant="destructive"
                         onClick={() => setShowDeleteDialog(true)}
+                        className="gap-2"
                     >
-                        <Trash2 className="h-4 w-4 mr-2" />
-                        Eliminar
+                        <Trash2 className="h-4 w-4" />
+                        <span>Eliminar</span>
                     </Button>
                 </div>
             </div>
@@ -275,7 +282,7 @@ export const AdminViewClientIdPage = () => {
                     <div className="flex items-center justify-between">
                         <div>
                             <CardTitle className="text-2xl">
-                                {selectedCliente.user.nombre}
+                                {cliente.user.nombre}
                             </CardTitle>
                             <CardDescription className="mt-2">
                                 Cliente registrado en el sistema
@@ -304,14 +311,14 @@ export const AdminViewClientIdPage = () => {
             {/* Dialogs */}
             <ChangePasswordDialog
                 open={showPasswordDialog}
-                userName={selectedCliente.user.nombre}
+                userName={cliente.user.nombre}
                 onOpenChange={setShowPasswordDialog}
                 onConfirm={handleChangePassword}
             />
 
             <DeleteClientDialog
                 open={showDeleteDialog}
-                clientName={selectedCliente.user.nombre}
+                clientName={cliente.user.nombre}
                 onOpenChange={setShowDeleteDialog}
                 onConfirm={handleDelete}
             />
