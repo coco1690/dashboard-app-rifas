@@ -1302,9 +1302,6 @@ export const useVentaStore = create<VentaStore>((set, get) => ({
   smsEnviado: false,
   errorSMS: null,
 
-  // ============================================================================
-  // ACCIONES
-  // ============================================================================
 
   verificarOCrearCliente: async (
     documento: string,
@@ -1376,9 +1373,6 @@ export const useVentaStore = create<VentaStore>((set, get) => ({
     }
   },
 
-  // ============================================================================
-  // ✅ ACTUALIZADO: venderBoletosPorSMS
-  // ============================================================================
   venderBoletosPorSMS: async (data: VentaWhatsAppData): Promise<OrdenBoleto | null> => {
     const {
       documento_identidad,
@@ -1580,9 +1574,6 @@ export const useVentaStore = create<VentaStore>((set, get) => ({
     }
   },
 
-  // ============================================================================
-  // ✅ ACTUALIZADO: venderBoletosPorWhatsApp
-  // ============================================================================
   venderBoletosPorWhatsApp: async (data: VentaWhatsAppData): Promise<OrdenBoleto | null> => {
     const {
       documento_identidad,
@@ -1784,10 +1775,6 @@ export const useVentaStore = create<VentaStore>((set, get) => ({
     }
   },
 
-  // ============================================================================
-  // FUNCIONES AUXILIARES
-  // ============================================================================
-
   verificarEmailCliente: async (documento: string): Promise<{ valido: boolean; email?: string }> => {
     try {
       const { data: cliente, error } = await supabase
@@ -1845,9 +1832,6 @@ export const useVentaStore = create<VentaStore>((set, get) => ({
     return cantidadBoletos * precioBoleta
   },
 
-  // ============================================================================
-  // ✅ ACTUALIZADO: venderBoletos
-  // ============================================================================
   venderBoletos: async (data: VentaData): Promise<OrdenBoleto | null> => {
     const {
       documento_identidad: cedula,
@@ -1927,7 +1911,7 @@ export const useVentaStore = create<VentaStore>((set, get) => ({
       }
 
       // 3. Crear la orden de compra
-      // ✅ ACTUALIZADO: Agregar campos de notificación
+      // se Agregaron campos de notificación
       const { data: orden, error: ordenError } = await supabase
         .from('ordenes_boletos')
         .insert([{
@@ -1938,9 +1922,9 @@ export const useVentaStore = create<VentaStore>((set, get) => ({
           total_pago: totalEsperado,
           estado_pago: estadoPago,
           metodo_pago: metodoPago,
-          enviado_email: enviarEmail && emailValido,  // ✅ NUEVO
-          enviado_whatsapp: false,                    // ✅ NUEVO
-          enviado_sms: false                          // ✅ NUEVO
+          enviado_email: enviarEmail && emailValido,  
+          enviado_whatsapp: false,                    
+          enviado_sms: false                          
         }])
         .select()
         .single()
