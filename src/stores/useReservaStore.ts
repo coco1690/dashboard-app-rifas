@@ -153,7 +153,7 @@ export const useReservaStore = create<ReservaStore>((set, get) => ({
       })
 
       // ✅ AGREGADO: Logging detallado
-      console.log('🔍 RPC Response completa:', { data, error })
+      // console.log('🔍 RPC Response completa:', { data, error })
 
       if (error) {
         console.error('❌ Error en RPC:', error)
