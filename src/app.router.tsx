@@ -26,12 +26,13 @@ import NewClientePage from "./agency/pages/clients/NewClientePage";
 import CrearAgenciasPage from "./admin/pages/crear_agencias/CrearAgenciasPage";
 import { DialogTerminosyCondiciones } from "./single_page/components/DialogTerminosyCondiciones";
 import { RecargaBoletosPage } from "./admin/pages/recargas/RecargaBoletosPage";
-import { CarritoDeComprasPage } from "./single_page/pages/carrito/CarritoDeComprasPage";
+// import { CarritoDeComprasPage } from "./single_page/pages/carrito/CarritoDeComprasPage";
 import { AdminRifasEditPage } from "./admin/pages/rifas/page/AdminRifasEditPage";
 import { AdminClientesPage } from "./admin/pages/clientes/AdminClientesPage";
 import CrearClientePage from "./admin/pages/clientes/CrearClientePage";
 import { AdminViewClientIdPage } from "./admin/pages/clientes/page/AdminViewClientIdPage";
 import EstadisticasAgenciasPage from "./admin/pages/estadisticas_agencias/EstadisticasagenciasPage";
+import { CarritoPage } from "./single_page/pages/carrito/page/CarritoPage";
 
 
 
@@ -66,7 +67,7 @@ export const appRouter = createBrowserRouter([
             },
             {
                 path: 'carrito',
-                element: <CarritoDeComprasPage />
+                element: <CarritoPage />
             },
 
         ]

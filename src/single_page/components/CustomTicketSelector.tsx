@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router'
-import { ShoppingCart, Star, Minus, Plus, Ticket, Loader2 } from 'lucide-react'
+import { ShoppingCart, Star, Ticket, Loader2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { getPaquetesPorDigitos, getMinimoPorDigitos, obtenerDigitosRifa } from '@/stores/useVentaStore'
 import { useVentaStore } from '@/stores/useVentaStore'
-import { useCarritoStore } from '@/stores/useCarritoStote'
-
+import { useReservaStore } from '@/stores/useReservaStore'
+import { useCarritoStore } from '@/stores/useCarritoStore'
 
 interface PackageOption {
   id: number
@@ -36,9 +36,10 @@ export const CustomTicketSelector = ({
   className
 }: CustomTicketSelectorProps) => {
   // ============================================================================
-  // STORE
+  // STORES
   // ============================================================================
   const { obtenerPrecioBoleta } = useVentaStore()
+  const { reservarBoletos, loading: reservando } = useReservaStore()
   const { agregarItem } = useCarritoStore()
   const navigate = useNavigate()
 
@@ -49,7 +50,7 @@ export const CustomTicketSelector = ({
   const [customQuantity, setCustomQuantity] = useState<number>(0)
   const [paquetesDisponibles, setPaquetesDisponibles] = useState<PackageOption[]>([])
   const [minimoPersonalizado, setMinimoPersonalizado] = useState<number>(101)
-  const [digitosRifa, setDigitosRifa] = useState<number>(4)
+  // const [ setDigitosRifa] = useState<number>(4)
   const [precioBoleta, setPrecioBoleta] = useState<number>(pricePerTicket)
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | null>(null)
@@ -80,7 +81,7 @@ export const CustomTicketSelector = ({
     try {
       // Obtener dígitos de la rifa
       const digitos = await obtenerDigitosRifa(rifaId)
-      setDigitosRifa(digitos)
+      // setDigitosRifa(digitos)
 
       // Obtener paquetes permitidos
       const paquetes = getPaquetesPorDigitos(digitos)
@@ -121,60 +122,96 @@ export const CustomTicketSelector = ({
   }
 
   /**
-   * Maneja la adición al carrito
+   * Maneja la adición al carrito de forma SEGURA
+   * IMPORTANTE: Ahora reserva en el backend primero
    */
-  const handleAddToCart = () => {
-    if (totalTickets > 0) {
-      // Agregar al store del carrito
-      agregarItem({
+  const handleAddToCart = async () => {
+    if (totalTickets <= 0 || !canAddToCart()) {
+      return
+    }
+
+    try {
+      // ============================================================================
+      // PASO 1: RESERVAR BOLETOS EN EL BACKEND
+      // ============================================================================
+      const reserva = await reservarBoletos({
         rifaId,
         rifaTitulo,
         rifaSubtitulo,
-        cantidad: totalTickets,
-        precioUnitario: precioBoleta,
-        total: totalPrice,
-        digitos: digitosRifa,
-        imagenRifa
+        imagenRifa,
+        cantidad: totalTickets
+      })
+
+      // Si la reserva falló, el error ya fue manejado en el store
+      if (!reserva) {
+        return
+      }
+
+      // ============================================================================
+      // PASO 2: AGREGAR AL CARRITO CON DATOS DEL BACKEND
+      // ============================================================================
+      agregarItem({
+        reserva_id: reserva.reserva_id,
+        token: reserva.token,
+        rifaId: reserva.rifaId,
+        rifaTitulo: reserva.rifaTitulo,
+        rifaSubtitulo: reserva.rifaSubtitulo,
+        imagenRifa: reserva.imagenRifa,
+        boletos_ids: reserva.boletos_ids,
+        numeros: reserva.numeros,
+        cantidad: reserva.cantidad,           // ← Del backend
+        precio_unitario: reserva.precio_unitario, // ← Del backend
+        total: reserva.total,                 // ← Del backend
+        digitos: reserva.digitos,
+        expira_en: reserva.expira_en
       })
       
-      // Llamar al callback si existe (para toast, analytics, etc)
+      // ============================================================================
+      // PASO 3: CALLBACK OPCIONAL (analytics, etc)
+      // ============================================================================
       if (onAddToCart) {
-        onAddToCart(totalTickets, totalPrice)
+        onAddToCart(reserva.cantidad, reserva.total)
       }
       
-      // Navegar al carrito de compras
+      // ============================================================================
+      // PASO 4: NAVEGAR AL CARRITO
+      // ============================================================================
       navigate('/carrito')
+
+    } catch (error) {
+      console.error('Error en handleAddToCart:', error)
+      // El error ya fue mostrado en el store de reservas
     }
   }
 
   /**
    * Incrementa la cantidad personalizada
    */
-  const handleIncrement = () => {
-    const currentValue = customQuantity || selectedPackage
-    const newValue = currentValue + 1
-    setCustomQuantity(newValue)
-    setSelectedPackage(0)
-  }
+  // const handleIncrement = () => {
+  //   const currentValue = customQuantity || selectedPackage
+  //   const newValue = currentValue + 1
+  //   setCustomQuantity(newValue)
+  //   setSelectedPackage(0)
+  // }
 
   /**
    * Decrementa la cantidad personalizada
    */
-  const handleDecrement = () => {
-    if (customQuantity > 0) {
-      const newValue = Math.max(0, customQuantity - 1)
-      setCustomQuantity(newValue)
-      if (newValue === 0 && paquetesDisponibles.length > 0) {
-        // Volver al paquete recomendado
-        const paqueteRecomendado = paquetesDisponibles.find(p => p.isRecommended)
-        if (paqueteRecomendado) {
-          setSelectedPackage(paqueteRecomendado.quantity)
-        }
-      }
-    } else if (selectedPackage > 0) {
-      setSelectedPackage(0)
-    }
-  }
+  // const handleDecrement = () => {
+  //   if (customQuantity > 0) {
+  //     const newValue = Math.max(0, customQuantity - 1)
+  //     setCustomQuantity(newValue)
+  //     if (newValue === 0 && paquetesDisponibles.length > 0) {
+  //       // Volver al paquete recomendado
+  //       const paqueteRecomendado = paquetesDisponibles.find(p => p.isRecommended)
+  //       if (paqueteRecomendado) {
+  //         setSelectedPackage(paqueteRecomendado.quantity)
+  //       }
+  //     }
+  //   } else if (selectedPackage > 0) {
+  //     setSelectedPackage(0)
+  //   }
+  // }
 
   /**
    * Valida si se puede agregar al carrito
@@ -251,12 +288,7 @@ export const CustomTicketSelector = ({
 
   return (
     <div className={cn("w-full max-w-2xl mx-auto space-y-4 md:space-y-6", className)}>
-      {/* Header con información de dígitos */}
-      <div className="text-center">
-        <Badge variant="outline" className="mb-2">
-          Evento de {digitosRifa} dígitos
-        </Badge>
-      </div>
+    
 
       {/* Grid de paquetes predefinidos */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-3">
@@ -266,19 +298,22 @@ export const CustomTicketSelector = ({
             className={cn(
               "relative cursor-pointer transition-all hover:shadow-md hover:scale-105",
               selectedPackage === pkg.quantity && !pkg.isRecommended && "ring-2 ring-primary shadow-md",
-              selectedPackage === pkg.quantity && pkg.isRecommended && "ring-2 ring-pink-500 shadow-lg",
-              pkg.isRecommended && selectedPackage !== pkg.quantity && "ring-2 ring-pink-300"
+              selectedPackage === pkg.quantity && pkg.isRecommended && "ring-2 ring-amber-500 shadow-lg",
+              pkg.isRecommended && selectedPackage !== pkg.quantity && "ring-2 ring-amber-300",
+              (reservando || loading) && "opacity-50 pointer-events-none"
             )}
             onClick={() => {
-              setSelectedPackage(pkg.quantity)
-              setCustomQuantity(0)
+              if (!reservando && !loading) {
+                setSelectedPackage(pkg.quantity)
+                setCustomQuantity(0)
+              }
             }}
           >
             {/* Estrella de recomendado */}
             {pkg.isRecommended && (
               <div className="absolute -top-2 md:-top-3 left-1/2 -translate-x-1/2 z-10">
                 <div className="bg-white rounded-full p-0.5 md:p-1 shadow-md">
-                  <Star className="w-4 h-4 md:w-5 md:h-5 fill-amber-500 text-amber-500" />
+                  <Star className="w-4 h-4 md:w-5 md:h-5 fill-yellow-500 text-yellow-500" />
                 </div>
               </div>
             )}
@@ -342,14 +377,12 @@ export const CustomTicketSelector = ({
           <span className="w-full border-t border-gray-200" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-white px-2 text-gray-500">
-            o personaliza tu cantidad
-          </span>
+         
         </div>
       </div>
 
       {/* Contador personalizado */}
-      <div className="space-y-3">
+      {/* <div className="space-y-3">
         <label className="text-sm font-medium text-gray-700 block text-center">
           Total de números a comprar
           {customQuantity > 0 && customQuantity < minimoPersonalizado && (
@@ -363,7 +396,7 @@ export const CustomTicketSelector = ({
             variant="outline"
             size="icon"
             onClick={handleDecrement}
-            disabled={totalTickets === 0}
+            disabled={totalTickets === 0 || reservando || loading}
             className="h-10 w-10 md:h-12 md:w-12 rounded-full"
           >
             <Minus className="w-4 h-4 md:w-5 md:h-5" />
@@ -379,12 +412,13 @@ export const CustomTicketSelector = ({
             variant="outline"
             size="icon"
             onClick={handleIncrement}
+            disabled={reservando || loading}
             className="h-10 w-10 md:h-12 md:w-12 rounded-full"
           >
             <Plus className="w-4 h-4 md:w-5 md:h-5" />
           </Button>
         </div>
-      </div>
+      </div> */}
 
       {/* Precio total */}
       <div className="space-y-2 text-center">
@@ -402,23 +436,34 @@ export const CustomTicketSelector = ({
       {/* Botón de añadir al carrito */}
       <Button
         size="lg"
-        className="w-full bg-amber-500 hover:bg-amber-600 text-white text-base md:text-lg font-bold py-4 md:py-6 rounded-full transition-all hover:scale-105"
-        disabled={!canAddToCart()}
+        className="w-full bg-amber-500 hover:bg-amber-600 text-white text-base md:text-lg font-bold py-4 md:py-6 rounded-full transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+        disabled={!canAddToCart() || reservando || loading}
         onClick={handleAddToCart}
       >
-        <ShoppingCart className="w-4 h-4 md:w-5 md:h-5 mr-2" />
-        {canAddToCart() 
-          ? `AÑADIR ${totalTickets} NÚMERO${totalTickets > 1 ? 'S' : ''} AL CARRITO`
-          : 'SELECCIONA UNA CANTIDAD VÁLIDA'
-        }
+        {reservando ? (
+          <>
+            <Loader2 className="w-4 h-4 md:w-5 md:h-5 mr-2 animate-spin" />
+            RESERVANDO NÚMEROS...
+          </>
+        ) : (
+          <>
+            <ShoppingCart className="w-4 h-4 md:w-5 md:h-5 mr-2" />
+            {canAddToCart() 
+              ? `AÑADIR ${totalTickets} NÚMERO${totalTickets > 1 ? 'S' : ''} AL CARRITO`
+              : 'SELECCIONA UNA CANTIDAD VÁLIDA'
+            }
+          </>
+        )}
       </Button>
 
-      {/* Información adicional */}
-      {/* <div className="text-center">
-        <p className="text-xs text-gray-500">
-          💡 Los paquetes son más económicos. ¡Aprovecha!
-        </p>
-      </div> */}
+      {/* Información de seguridad */}
+      {canAddToCart() && !reservando && (
+        <div className="text-center">
+          <p className="text-xs text-gray-500">
+            🔒 Tus números serán reservados por 10 minutos
+          </p>
+        </div>
+      )}
     </div>
   )
 }

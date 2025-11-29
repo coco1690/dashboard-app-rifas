@@ -12,6 +12,7 @@ export interface HistorialVenta {
   estado_pago: 'pendiente' | 'pagado' | 'fallido' | 'reembolsado'
   metodo_pago: 'efectivo' | 'transferencia' | 'tarjeta'
   fecha_venta: string
+  tipo_venta: 'agencia' | 'web'
 
   // Información del cliente
   cliente_nombre: string
@@ -84,6 +85,7 @@ interface HistorialVentasStore {
   obtenerHistorial: (filtros?: FiltrosHistorial, page?: number) => Promise<void>
   obtenerVentaPorId: (ordenId: string) => Promise<HistorialVenta | null>
   obtenerEstadisticas: (filtros?: FiltrosHistorial) => Promise<void>
+  obtenerTodosNumerosGanadoresRifa: (rifaId: string) => Promise<string[]>
 
   // Filtros y búsqueda
   setFiltros: (filtros: Partial<FiltrosHistorial>) => void
@@ -196,6 +198,34 @@ export const useHistorialVentasStore = create<HistorialVentasStore>((set, get) =
   //     })
   //   }
   // },
+
+  obtenerTodosNumerosGanadoresRifa: async (rifaId: string) => {
+  try {
+    const { data, error } = await supabase
+      .from('vista_historial_ventas')
+      .select('numeros_boletos, rifa_numeros_suerte')
+      .eq('rifa_id', rifaId)
+
+    if (error) throw error
+
+    const ganadores = new Set<string>()
+    
+    data?.forEach(venta => {
+      if (venta.numeros_boletos && venta.rifa_numeros_suerte) {
+        venta.numeros_boletos.forEach((num: string) => {
+          if (venta.rifa_numeros_suerte.includes(num)) {
+            ganadores.add(num)
+          }
+        })
+      }
+    })
+
+    return Array.from(ganadores)
+  } catch (err) {
+    console.error('Error al obtener ganadores:', err)
+    return []
+  }
+},
 
   obtenerHistorial: async (filtros = {}, page = 1) => {
     const state = get()
