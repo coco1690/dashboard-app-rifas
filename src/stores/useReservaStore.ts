@@ -252,7 +252,7 @@ export const useReservaStore = create<ReservaStore>((set, get) => ({
 
       toast.dismiss(loadingToast)
 
-      console.log('✅ Reserva exitosa:', reserva)
+      // console.log('✅ Reserva exitosa:', reserva)
       return reserva
 
     } catch (err: any) {
