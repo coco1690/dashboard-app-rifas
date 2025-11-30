@@ -27,6 +27,14 @@ export const PayPalButtonsWrapper = ({
     const { items, limpiarCarrito } = useCarritoStore()
     const { sessionId, liberarTodasLasReservas } = useReservaStore()
 
+    // Al inicio del componente, después de los hooks
+    console.log('🔍 PayPal Debug:', {
+        mode: import.meta.env.VITE_PAYPAL_MODE,
+        hasClientId: !!import.meta.env.VITE_PAYPAL_CLIENT_ID_LIVE,
+        itemsCount: items.length,
+        sessionId: sessionId ? '✅' : '❌'
+    })
+
     // ============================================================================
     // VALIDACIONES INICIALES
     // ============================================================================
@@ -216,14 +224,14 @@ export const PayPalButtonsWrapper = ({
                     shape: 'rect',
                     label: 'paypal',
                     height: 45
-                    
+
                 }}
                 createOrder={createOrder}
                 onApprove={onApprove}
                 onCancel={onCancel}
                 onError={onError}
                 forceReRender={[datosFacturacion, items.length]}
-                
+
             />
         </div>
     )

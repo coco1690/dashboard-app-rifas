@@ -179,7 +179,7 @@ export const useCarritoStore = create<CarritoStore>()(
         })
       },
 
-      
+
       // Limpia todos los items del carrito
       // IMPORTANTE: También debería liberar todas las reservas en el backend
       limpiarCarrito: () => {
@@ -197,7 +197,7 @@ export const useCarritoStore = create<CarritoStore>()(
           error: null
         })
       },
-     
+
       //  Limpia items expirados del carrito
       //  Debe ejecutarse periódicamente    
       limpiarItemsExpirados: () => {
@@ -208,15 +208,19 @@ export const useCarritoStore = create<CarritoStore>()(
           const expirado = new Date(item.expira_en) <= ahora
           if (expirado) {
             console.log(`⏰ Removiendo item expirado useCarritoStore: ${item.rifaTitulo}`)
-            // useReservaStore.getState().liberarReserva(item.reserva_id)
+            useReservaStore.getState().liberarReserva(item.reserva_id)
           }
           return !expirado
         })
 
         if (itemsValidos.length !== items.length) {
           set({ items: itemsValidos })
-          console.log(`🧹 ${items.length - itemsValidos.length} item(s) expirado(s) removido(s) useCarritoStore`)
-          
+          const cantidadLimpiada = items.length - itemsValidos.length
+          console.log(`🧹 ${cantidadLimpiada} item(s) expirado(s) removido(s)`)
+
+          toast.warning('Reserva expirada', {
+            description: `${cantidadLimpiada} reserva(s) fueron liberadas por tiempo`
+          })
         }
       },
 
@@ -224,7 +228,7 @@ export const useCarritoStore = create<CarritoStore>()(
       // GETTERS
       // ========================================================================
 
-      
+
       // Calcula el total del carrito
       // IMPORTANTE: Este total es solo informativo, el backend recalculará en checkout
       obtenerTotal: () => {
@@ -237,7 +241,7 @@ export const useCarritoStore = create<CarritoStore>()(
           return total + item.total
         }, 0)
       },
-      
+
       // Obtiene la cantidad total de números en el carrito     
       obtenerCantidadTotal: () => {
         const { items } = get()
@@ -316,12 +320,12 @@ export const useCarritoStore = create<CarritoStore>()(
 // Ejecutar limpieza cada minuto
 if (typeof window !== 'undefined') {
   setInterval(() => {
-     useCarritoStore.getState().limpiarItemsExpirados()
+    useCarritoStore.getState().limpiarItemsExpirados()
   }, 2000) // 2 segundos
 
   // Ejecutar limpieza al cargar
   setTimeout(() => {
-     useCarritoStore.getState().limpiarItemsExpirados()
+    useCarritoStore.getState().limpiarItemsExpirados()
   }, 1000)
 }
 

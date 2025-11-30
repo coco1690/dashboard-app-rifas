@@ -189,8 +189,30 @@ const rootElement = document.getElementById('root')
 if (!rootElement) {
   throw new Error('No root element found')
 }
+
+
+// ============================================================================
+// CONFIGURACIÓN PAYPAL DINÁMICA (SANDBOX/LIVE)
+// ============================================================================
+const PAYPAL_MODE = import.meta.env.VITE_PAYPAL_MODE || 'sandbox'
+const PAYPAL_CLIENT_ID = PAYPAL_MODE === 'live' 
+  ? import.meta.env.VITE_PAYPAL_CLIENT_ID_LIVE 
+  : import.meta.env.VITE_PAYPAL_CLIENT_ID_SANDBOX
+
+// Validar que existan las credenciales
+if (!PAYPAL_CLIENT_ID) {
+  console.error('❌ ERROR: No se encontró PAYPAL_CLIENT_ID para modo:', PAYPAL_MODE)
+  console.error('Variables disponibles:', {
+    MODE: PAYPAL_MODE,
+    SANDBOX: import.meta.env.VITE_PAYPAL_CLIENT_ID_SANDBOX ? '✅' : '❌',
+    LIVE: import.meta.env.VITE_PAYPAL_CLIENT_ID_LIVE ? '✅' : '❌'
+  })
+}
+
+console.log('🔧 PayPal configurado en modo:', PAYPAL_MODE)
+
 const paypalOptions = {
-  clientId: import.meta.env.VITE_PAYPAL_CLIENT_ID || '',
+  clientId: PAYPAL_CLIENT_ID || '',
   currency: 'USD',
   intent: 'capture',
   locale: 'es_EC'

@@ -292,7 +292,7 @@ export const useReservaStore = create<ReservaStore>((set, get) => ({
   // LIBERAR RESERVA
   liberarReserva: async (rifaId: string) => {
     const reserva = get().reservasActivas.get(rifaId)
-    
+
 
     if (!reserva) {
       console.log('⚠️ No hay reserva para liberar:', rifaId)
@@ -331,24 +331,37 @@ export const useReservaStore = create<ReservaStore>((set, get) => ({
   },
 
   // LIMPIAR RESERVAS EXPIRADAS
+  // limpiarReservasExpiradas: () => {
+  //   const { reservasActivas } = get()
+  //   const ahora = new Date()
+  //   let algunaExpirada = false
+
+  //   reservasActivas.forEach((reserva, rifaId) => {
+  //     if (new Date(reserva.expira_en) <= ahora) {
+  //       console.log('⏰ Reserva expirada localmente usereservastore :', rifaId)
+  //       get().liberarReserva(rifaId)
+  //       algunaExpirada = true
+  //     }
+  //   })
+
+  //   if (algunaExpirada) {
+  //     toast.warning('Reserva expirada', {
+  //       description: 'Algunos boletos fueron liberados por tiempo'
+  //     })
+  //   }
+  // },
+
   limpiarReservasExpiradas: () => {
     const { reservasActivas } = get()
     const ahora = new Date()
-    let algunaExpirada = false
 
     reservasActivas.forEach((reserva, rifaId) => {
       if (new Date(reserva.expira_en) <= ahora) {
-        console.log('⏰ Reserva expirada localmente usereservastore :', rifaId)
+        console.log('⏰ Reserva expirada localmente usereservastore:', rifaId)
         get().liberarReserva(rifaId)
-        algunaExpirada = true
       }
     })
 
-    if (algunaExpirada) {
-      toast.warning('Reserva expirada', {
-        description: 'Algunos boletos fueron liberados por tiempo'
-      })
-    }
   },
 
   liberarTodasLasReservas: async () => {

@@ -253,7 +253,7 @@ export const DatosFacturacion = ({
             <Input
               id="ciudad"
               type="text"
-              placeholder="Balsas"
+              placeholder="Ciudad"
               value={datos.ciudad}
               onChange={(e) => handleChange('ciudad', e.target.value)}
               className={errores.ciudad ? 'border-red-500' : ''}
