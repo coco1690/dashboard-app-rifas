@@ -38,6 +38,7 @@ const getMenuItemsByRole = (userRole: string) => {
         { icon: Repeat, label: 'Recargas', to: '/admin/recargas' },
         { icon: TrendingUp, label: 'Estadísticas', to: '/admin/estadisticas_agencias' },
         { icon: History, label: 'Historial', to: '/admin/admin_historial' },
+        { icon: Ticket, label: 'Reservas', to: '/admin/admin_reservas' },
       ];
 
     case 'agencia':
@@ -304,7 +305,7 @@ export const BottomNavigation: React.FC = () => {
   }, [user?.user_type]);
 
   const menuItems = useMemo(() => {
-    return getMenuItemsByRole(userRole).slice(0, 8); // Limitar a 7 items para móvil
+    return getMenuItemsByRole(userRole).slice(0,10);// Limitar a 10 items para móvil
   }, [userRole]);
 
   const isActiveRoute = (to: string) => {

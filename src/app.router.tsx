@@ -33,6 +33,7 @@ import CrearClientePage from "./admin/pages/clientes/CrearClientePage";
 import { AdminViewClientIdPage } from "./admin/pages/clientes/page/AdminViewClientIdPage";
 import EstadisticasAgenciasPage from "./admin/pages/estadisticas_agencias/EstadisticasagenciasPage";
 import { CarritoPage } from "./single_page/pages/carrito/page/CarritoPage";
+import AdminReservasPage from "./admin/pages/reservas/Adminreservas";
 
 
 
@@ -151,6 +152,10 @@ export const appRouter = createBrowserRouter([
             {
                 path: 'admin_historial',
                 element: <AdminHistorialVentas />
+            },
+            {
+                path: 'admin_reservas',
+                element: <AdminReservasPage />
             },
                 {
                 path: 'admin_clientes',
