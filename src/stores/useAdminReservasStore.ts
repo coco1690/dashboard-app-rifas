@@ -126,7 +126,7 @@ export const useAdminReservasStore = create<AdminReservasStore>((set, get) => ({
       }
 
       // Log para debug
-      console.log('🔍 Data cruda:', data)
+      // console.log('🔍 Data cruda:', data)
       
       let reservas: ReservaAdmin[] = []
 
