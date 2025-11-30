@@ -98,6 +98,7 @@ import { useAuthStore } from './stores/authStore'
 import { useReservaStore } from './stores/useReservaStore'
 import { Toaster } from 'sonner'
 import { PayPalScriptProvider } from '@paypal/react-paypal-js'
+import './debug-env'
 
 let isInitialized = false
 
@@ -192,24 +193,29 @@ if (!rootElement) {
 
 
 // ============================================================================
-// CONFIGURACIÓN PAYPAL DINÁMICA (SANDBOX/LIVE)
+// CONFIGURACIÓN PAYPAL CON DEBUG
 // ============================================================================
 const PAYPAL_MODE = import.meta.env.VITE_PAYPAL_MODE || 'sandbox'
-const PAYPAL_CLIENT_ID = PAYPAL_MODE === 'live' 
-  ? import.meta.env.VITE_PAYPAL_CLIENT_ID_LIVE 
+
+console.log('🔧 Environment check:', {
+  MODE: PAYPAL_MODE,
+  'Has SANDBOX ID': !!import.meta.env.VITE_PAYPAL_CLIENT_ID_SANDBOX,
+  'Has LIVE ID': !!import.meta.env.VITE_PAYPAL_CLIENT_ID_LIVE,
+  'SANDBOX ID value': import.meta.env.VITE_PAYPAL_CLIENT_ID_SANDBOX ?
+    import.meta.env.VITE_PAYPAL_CLIENT_ID_SANDBOX.substring(0, 10) + '...' :
+    'MISSING',
+  'LIVE ID value': import.meta.env.VITE_PAYPAL_CLIENT_ID_LIVE ?
+    import.meta.env.VITE_PAYPAL_CLIENT_ID_LIVE.substring(0, 10) + '...' :
+    'MISSING'
+})
+
+const PAYPAL_CLIENT_ID = PAYPAL_MODE === 'live'
+  ? import.meta.env.VITE_PAYPAL_CLIENT_ID_LIVE
   : import.meta.env.VITE_PAYPAL_CLIENT_ID_SANDBOX
 
-// Validar que existan las credenciales
-if (!PAYPAL_CLIENT_ID) {
-  console.error('❌ ERROR: No se encontró PAYPAL_CLIENT_ID para modo:', PAYPAL_MODE)
-  console.error('Variables disponibles:', {
-    MODE: PAYPAL_MODE,
-    SANDBOX: import.meta.env.VITE_PAYPAL_CLIENT_ID_SANDBOX ? '✅' : '❌',
-    LIVE: import.meta.env.VITE_PAYPAL_CLIENT_ID_LIVE ? '✅' : '❌'
-  })
-}
-
-console.log('🔧 PayPal configurado en modo:', PAYPAL_MODE)
+console.log('🎯 Selected CLIENT_ID:', PAYPAL_CLIENT_ID ?
+  PAYPAL_CLIENT_ID.substring(0, 10) + '...' :
+  'MISSING')
 
 const paypalOptions = {
   clientId: PAYPAL_CLIENT_ID || '',
@@ -217,6 +223,11 @@ const paypalOptions = {
   intent: 'capture',
   locale: 'es_EC'
 }
+
+console.log('📦 PayPal Options:', {
+  hasClientId: !!paypalOptions.clientId,
+  clientIdLength: paypalOptions.clientId.length
+})
 
 createRoot(rootElement).render(
   <>
