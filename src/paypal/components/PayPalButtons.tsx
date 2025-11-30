@@ -27,14 +27,6 @@ export const PayPalButtonsWrapper = ({
     const { items, limpiarCarrito } = useCarritoStore()
     const { sessionId, liberarTodasLasReservas } = useReservaStore()
 
-    // Al inicio del componente, después de los hooks
-    console.log('🔍 PayPal Debug:', {
-        mode: import.meta.env.VITE_PAYPAL_MODE,
-        hasClientId: !!import.meta.env.VITE_PAYPAL_CLIENT_ID_LIVE,
-        itemsCount: items.length,
-        sessionId: sessionId ? '✅' : '❌'
-    })
-
     // ============================================================================
     // VALIDACIONES INICIALES
     // ============================================================================

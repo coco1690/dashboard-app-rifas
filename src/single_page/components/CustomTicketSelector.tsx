@@ -112,7 +112,7 @@ export const CustomTicketSelector = ({
         setSelectedPackage(paqueteRecomendado.quantity)
       }
 
-      console.log(`📦 Configuración cargada: ${digitos} dígitos, ${paquetes.length} paquetes disponibles`)
+      // console.log(`📦 Configuración cargada: ${digitos} dígitos, ${paquetes.length} paquetes disponibles`)
     } catch (err) {
       console.error('Error cargando configuración:', err)
       setError('Error al cargar la configuración de paquetes')

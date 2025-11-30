@@ -59,7 +59,7 @@ export const useRifaStore = create<RifaStore>((set, get) => ({
   deletingProgress: null,
 
   fetchRifas: async (forceRefresh = false) => {
-    console.log('🔍 fetchRifas ejecutándose, forceRefresh:', forceRefresh)
+    // console.log('🔍 fetchRifas ejecutándose, forceRefresh:', forceRefresh)
 
     const { rifas, lastFetch } = get()
     const CACHE_KEY = 'rifas_cache'
@@ -77,7 +77,7 @@ export const useRifaStore = create<RifaStore>((set, get) => ({
 
           // Si el cache es válido (menos de 5 minutos)
           if (Date.now() - parsedTime < 300000) {
-            console.log('✅ Cargando desde localStorage')
+            // console.log('✅ Cargando desde localStorage')
             set({
               rifas: parsedRifas,
               lastFetch: parsedTime,
@@ -113,7 +113,7 @@ export const useRifaStore = create<RifaStore>((set, get) => ({
       try {
         localStorage.setItem(CACHE_KEY, JSON.stringify(data))
         localStorage.setItem(CACHE_TIME_KEY, timestamp.toString())
-        console.log('💾 Datos guardados en localStorage')
+        // console.log('💾 Datos guardados en localStorage')
       } catch (error) {
         console.error('Error al guardar en localStorage:', error)
       }

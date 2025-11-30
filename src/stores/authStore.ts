@@ -124,7 +124,7 @@ export const useAuthStore = create<AuthState>()(
                 // 2️⃣ Verificar cache en memoria
                 const currentUser = get().user
                 if (currentUser?.email === email) {
-                    console.log('✅ Usuario ya cargado en cache (memoria)')
+                    // console.log('✅ Usuario ya cargado en cache (memoria)')
                     set({ isSessionChecked: true })
                     return
                 }

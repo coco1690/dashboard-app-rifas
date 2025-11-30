@@ -98,16 +98,16 @@ import { useAuthStore } from './stores/authStore'
 import { useReservaStore } from './stores/useReservaStore'
 import { Toaster } from 'sonner'
 import { PayPalScriptProvider } from '@paypal/react-paypal-js'
-import './debug-env'
+
 
 let isInitialized = false
 
-const handleAuthChange = async (event: string, session: any) => {
+const handleAuthChange = async ( session: any) => {
   const email = session?.user?.email ?? null
 
-  if (import.meta.env.DEV) {
-    console.log(`🔄 Auth event: ${event}, Email: ${email}`)
-  }
+  // if (import.meta.env.DEV) {
+  //   console.log(`🔄 Auth event: ${event}, Email: ${email}`)
+  // }
 
   // Esperar un momento para que Zustand persist cargue el localStorage
   await new Promise(resolve => setTimeout(resolve, 100))
@@ -121,19 +121,19 @@ const handleAuthChange = async (event: string, session: any) => {
       return
     }
 
-    if (currentUser?.email && currentUser.email !== email) {
-      if (import.meta.env.DEV) {
-        console.log("⚠️ Email cambió, recargando desde DB")
-      }
-    } else if (!currentUser) {
-      if (import.meta.env.DEV) {
-        console.log("🔍 No hay usuario en cache, consultando DB")
-      }
-    }
+    // if (currentUser?.email && currentUser.email !== email) {
+    //   if (import.meta.env.DEV) {
+    //     console.log("⚠️ Email cambió, recargando desde DB")
+    //   }
+    // } else if (!currentUser) {
+    //   if (import.meta.env.DEV) {
+    //     console.log("🔍 No hay usuario en cache, consultando DB")
+    //   }
+    // }
 
-    if (import.meta.env.DEV) {
-      console.log("✅ Cargando usuario:", email)
-    }
+    // if (import.meta.env.DEV) {
+    //   console.log("✅ Cargando usuario:", email)
+    // }
 
     try {
       await useAuthStore.getState().setUserFromSession(email)
@@ -143,7 +143,7 @@ const handleAuthChange = async (event: string, session: any) => {
     }
   } else {
     if (import.meta.env.DEV) {
-      console.log("👋 Usuario cerró sesión")
+      // console.log("👋 Usuario cerró sesión")
     }
     useAuthStore.setState({ user: null, isSessionChecked: true })
   }
@@ -152,7 +152,7 @@ const handleAuthChange = async (event: string, session: any) => {
 }
 
 
-// ✅ NUEVO: Inicializar sistema de reservas
+//  NUEVO: Inicializar sistema de reservas
 const initializeApp = () => {
   // Inicializar sesión de reservas
   useReservaStore.getState().inicializarSesion()
@@ -197,37 +197,19 @@ if (!rootElement) {
 // ============================================================================
 const PAYPAL_MODE = import.meta.env.VITE_PAYPAL_MODE || 'sandbox'
 
-console.log('🔧 Environment check:', {
-  MODE: PAYPAL_MODE,
-  'Has SANDBOX ID': !!import.meta.env.VITE_PAYPAL_CLIENT_ID_SANDBOX,
-  'Has LIVE ID': !!import.meta.env.VITE_PAYPAL_CLIENT_ID_LIVE,
-  'SANDBOX ID value': import.meta.env.VITE_PAYPAL_CLIENT_ID_SANDBOX ?
-    import.meta.env.VITE_PAYPAL_CLIENT_ID_SANDBOX.substring(0, 10) + '...' :
-    'MISSING',
-  'LIVE ID value': import.meta.env.VITE_PAYPAL_CLIENT_ID_LIVE ?
-    import.meta.env.VITE_PAYPAL_CLIENT_ID_LIVE.substring(0, 10) + '...' :
-    'MISSING'
-})
-
 const PAYPAL_CLIENT_ID = PAYPAL_MODE === 'live'
   ? import.meta.env.VITE_PAYPAL_CLIENT_ID_LIVE
   : import.meta.env.VITE_PAYPAL_CLIENT_ID_SANDBOX
 
-console.log('🎯 Selected CLIENT_ID:', PAYPAL_CLIENT_ID ?
-  PAYPAL_CLIENT_ID.substring(0, 10) + '...' :
-  'MISSING')
+
 
 const paypalOptions = {
   clientId: PAYPAL_CLIENT_ID || '',
   currency: 'USD',
   intent: 'capture',
-  locale: 'es_EC'
-}
+  locale: 'es_EC',
 
-console.log('📦 PayPal Options:', {
-  hasClientId: !!paypalOptions.clientId,
-  clientIdLength: paypalOptions.clientId.length
-})
+}
 
 createRoot(rootElement).render(
   <>
