@@ -160,13 +160,8 @@ export default function TablaReservas({ reservas, loading, tipo }: TablaReservas
                 <TableCell>
                   <div>
                     <p className="font-medium">{reserva.rifa_titulo}</p>
-                    {reserva.rifa_subtitulo && (
-                      <p className="text-sm text-muted-foreground">
-                        {reserva.rifa_subtitulo}
-                      </p>
-                    )}
                     <p className="text-xs text-muted-foreground mt-1">
-                      ID: {reserva.id.slice(0, 8)}...
+                      ID: {reserva.id.slice(0, 8).toUpperCase()}
                     </p>
                   </div>
                 </TableCell>
