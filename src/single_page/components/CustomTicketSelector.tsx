@@ -298,8 +298,8 @@ export const CustomTicketSelector = ({
             className={cn(
               "relative cursor-pointer transition-all hover:shadow-md hover:scale-105",
               selectedPackage === pkg.quantity && !pkg.isRecommended && "ring-2 ring-primary shadow-md",
-              selectedPackage === pkg.quantity && pkg.isRecommended && "ring-2 ring-amber-500 shadow-lg",
-              pkg.isRecommended && selectedPackage !== pkg.quantity && "ring-2 ring-amber-300",
+              selectedPackage === pkg.quantity && pkg.isRecommended && "ring-2 ring-red-500 shadow-lg",
+              pkg.isRecommended && selectedPackage !== pkg.quantity && "ring-2 ring-red-300",
               (reservando || loading) && "opacity-50 pointer-events-none"
             )}
             onClick={() => {
@@ -320,34 +320,34 @@ export const CustomTicketSelector = ({
 
             <CardContent className={cn(
               "p-2 md:p-4 flex flex-col items-center justify-center space-y-1 md:space-y-2 transition-colors",
-              pkg.isRecommended && selectedPackage === pkg.quantity && "bg-gradient-to-br from-amber-500 to-amber-600 text-white rounded-lg",
-              pkg.isRecommended && selectedPackage !== pkg.quantity && "bg-gradient-to-br from-amber-50 to-amber-100"
+              pkg.isRecommended && selectedPackage === pkg.quantity && "bg-gradient-to-br from-red-500 to-red-600 text-white rounded-lg",
+              pkg.isRecommended && selectedPackage !== pkg.quantity && "bg-gradient-to-br from-red-50 to-red-100"
             )}>
               <Ticket className={cn(
                 "w-6 h-6 md:w-8 md:h-8 transition-colors",
                 pkg.isRecommended && selectedPackage === pkg.quantity ? "text-white" : 
-                pkg.isRecommended ? "text-amber-500" : "text-gray-600"
+                pkg.isRecommended ? "text-red-500" : "text-gray-600"
               )} />
               
               <div className="text-center">
                 <div className={cn(
                   "text-xl md:text-2xl font-bold",
                   pkg.isRecommended && selectedPackage === pkg.quantity ? "text-white" : 
-                  pkg.isRecommended ? "text-amber-600" : "text-gray-900"
+                  pkg.isRecommended ? "text-red-600" : "text-gray-900"
                 )}>
                   {pkg.quantity}
                 </div>
                 <div className={cn(
                   "text-xs md:text-sm",
                   pkg.isRecommended && selectedPackage === pkg.quantity ? "text-white/90" : 
-                  pkg.isRecommended ? "text-amber-600/80" : "text-gray-600"
+                  pkg.isRecommended ? "text-red-600/80" : "text-gray-600"
                 )}>
                   Imágenes
                 </div>
                 <div className={cn(
                   "text-[10px] md:text-xs font-semibold mt-0.5 md:mt-1",
                   pkg.isRecommended && selectedPackage === pkg.quantity ? "text-white" : 
-                  pkg.isRecommended ? "text-amber-700" : "text-gray-700"
+                  pkg.isRecommended ? "text-red-700" : "text-gray-700"
                 )}>
                   ${(pkg.quantity * precioBoleta).toLocaleString()}
                 </div>
@@ -359,8 +359,8 @@ export const CustomTicketSelector = ({
                   className={cn(
                     "font-medium text-[10px] md:text-xs py-0 md:py-0.5 px-1.5 md:px-2",
                     selectedPackage === pkg.quantity 
-                      ? "bg-white text-amber-600" 
-                      : "bg-amber-600 text-white"
+                      ? "bg-white text-red-600" 
+                      : "bg-red-600 text-white"
                   )}
                 >
                   Recomendado
@@ -436,7 +436,7 @@ export const CustomTicketSelector = ({
       {/* Botón de añadir al carrito */}
       <Button
         size="lg"
-        className="w-full bg-amber-500 hover:bg-amber-600 text-white text-base md:text-lg font-bold py-4 md:py-6 rounded-full transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full bg-red-500 hover:bg-red-600 text-white text-base md:text-lg font-bold py-4 md:py-6 rounded-full transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
         disabled={!canAddToCart() || reservando || loading}
         onClick={handleAddToCart}
       >

@@ -130,7 +130,7 @@ export const MetodosDePago = () => {
           </div>
 
           {/* Additional Info */}
-          <div className="mt-16 max-w-4xl mx-auto">
+          {/* <div className="mt-16 max-w-4xl mx-auto">
             <div className="bg-gradient-to-r from-amber-50 to-amber-100 rounded-xl border border-amber-200 p-8">
               <div className="text-center">
                 <div className="inline-flex items-center justify-center w-12 h-12 bg-gradient-to-br rounded-full mb-4">
@@ -161,7 +161,7 @@ export const MetodosDePago = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </div> */}
 
           <FloatingWhatsAppButton />
         </div>
