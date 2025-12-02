@@ -176,41 +176,7 @@ export const ResumenPedido = ({
         </div>
 
         <Separator />
-
-        {/* ✅ BOTONES DE PAGO */}
-        {/* {!datosFacturacion ? (
-          // Mostrar botón de "Proceder al Pago" si no hay datos de facturación
-          <div>
-            <Button
-              size="lg"
-              className="w-full bg-amber-500 hover:bg-amber-600 text-white"
-              onClick={onProcederPago}
-              disabled={!formularioValido}
-            >
-              <CreditCard className="w-5 h-5 mr-2" />
-              Proceder al Pago con tarjeta o PayPal
-            </Button>
-
-            <Button
-              size="lg"
-              className="w-full bg-black hover:bg-amber-600 text-white"
-              // onClick={onProcederPago}
-              disabled={!formularioValido}
-            >
-               Pago con trasferencia bancaria
-            </Button>
-          </div>
-        ) : (
-          // Mostrar botones de PayPal si ya hay datos de facturación
-          <div className="space-y-3">
-            <PayPalButtonsWrapper
-              datosFacturacion={datosFacturacion}
-              onSuccess={onPayPalSuccess}
-              handleError={onPayPalError}
-            />
-          </div>
-        )} */}
-
+        
         {!datosFacturacion ? (
           <div className="space-y-3">
             <Button
@@ -220,8 +186,17 @@ export const ResumenPedido = ({
               disabled={!formularioValido}
             >
               <CreditCard className="w-5 h-5 mr-2" />
-              Proceder al Pago con tarjeta o PayPal
+              Proceder al Pago 
             </Button>
+
+             {/* <Button
+              size="lg"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+              disabled={!formularioValido}
+            >
+              <CreditCard className="w-5 h-5 mr-2" />
+              Pago con tarjeta de crédito/débito
+            </Button> */}
 
             <Button
               size="lg"
@@ -231,6 +206,7 @@ export const ResumenPedido = ({
               <Building2 className="w-5 h-5 mr-2" />
               Transferencia bancaria
             </Button>
+
           </div>
         ) : (
           <div className="space-y-4">

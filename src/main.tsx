@@ -361,6 +361,10 @@ const paypalOptions = {
   currency: 'USD',
   intent: 'capture',
   locale: 'es_EC',
+  components: "buttons,card-fields",
+  enableFunding: "card",
+  disableFunding: "paylater,venmo",
+  // 'disable-funding': 'card,credit,paylater'
 }
 
 // ============================================================================
