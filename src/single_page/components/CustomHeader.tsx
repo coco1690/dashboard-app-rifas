@@ -549,8 +549,8 @@ export const CustomHeader = () => {
                 </Button>
                 {cartCount > 0 && (
                   <span
-                    className={`absolute -top-0 -right-0 bg-amber-400 text-black text-[8px] font-bold rounded-full h-3.5 w-3.5 flex items-center justify-center transition-all duration-300 ${isAnimating
-                        ? 'animate-bounce scale-125 ring-1 ring-amber-300'
+                    className={`absolute -top-0 -right-0 bg-red-400 text-black text-[8px] font-bold rounded-full h-3.5 w-3.5 flex items-center justify-center transition-all duration-300 ${isAnimating
+                        ? 'animate-bounce scale-125 ring-1 ring-red-300'
                         : 'scale-100'
                       }`}
                   >

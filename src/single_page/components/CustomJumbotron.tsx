@@ -56,16 +56,16 @@ export const CustomJumbotron = ({
 
             {/* Badge de estado */}
             {estado && (
-              <div className="inline-block bg-yellow-500 text-black text-sm font-bold px-4 py-2 rounded uppercase">
+              <div className="inline-block bg-yellow-500 text-black text-xs font-bold px-4 py-2 rounded uppercase">
                 {estado === 'finalizada' ? 'FINALIZADA' : estado}
               </div>
             )}
 
             {/* Título principal */}
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
+            <h1 className="text-2xl md:text-2xl lg:text-6xl font-bold leading-tight">
               {title}
             </h1>
-            <h1 className="text-2xl md:text-2xl lg:text-2xl font-bold leading-tight">
+            <h1 className="text-sm md:text-2xl lg:text-2xl leading-tight">
               {subTitle}
             </h1>
 
@@ -81,7 +81,7 @@ export const CustomJumbotron = ({
 
             {/* Precio */}
             {precio && (
-              <div className="text-2xl md:text-3xl font-bold">
+              <div className="text-xs md:text-3xl font-bold">
                 Precio: <span className="text-green-400">X ${precio.toLocaleString()} USD</span>
                 <span className="text-sm text-gray-300 block mt-1">IVA incluido c/u</span>
               </div>
