@@ -11,10 +11,10 @@ export const NumerosDeLaSuerte = ({ numbers, emoji = '', numerosGanadores = [] }
         <section className="py-20 px-4 lg:px-8 bg-gray-100">
             <div className="container mx-auto text-center">
                 <p className="text-2xl lg:text-2xl tracking-tight mb-6">
-                    Por la compra de tu número participa gratis en los
+                    Por la compra de tus imágenes participa gratis en las
                 </p>
                 <h1 className="text-2xl lg:text-5xl font-bold tracking-tight mb-15">
-                    ¡Números de la suerte!
+                    ¡Imágenes de la suerte!
                 </h1>
 
                 {isEmptyMessage ? (
@@ -53,10 +53,10 @@ export const NumerosDeLaSuerte = ({ numbers, emoji = '', numerosGanadores = [] }
                 )}
 
                 <p className="text-2xl lg:text-2xl tracking-tight mt-10">
-                    Si el número coincide con alguno de los
+                    Si la imágen coincide con alguna de las
                 </p>
                 <p className="text-2xl lg:text-2xl tracking-tight">
-                    números de la suerte ganas de forma instantánea
+                    imágenes de la suerte ganas de forma instantánea
                 </p>
             </div>
         </section>

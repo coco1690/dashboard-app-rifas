@@ -392,7 +392,7 @@ export const CarritoPage = () => {
             Tu carrito está vacío
           </h2>
           <p className="text-gray-600 mb-6">
-            Agrega algunos números para continuar
+            Agrega algunas imágenes para continuar
           </p>
           <Button
             onClick={() => navigate('/')}

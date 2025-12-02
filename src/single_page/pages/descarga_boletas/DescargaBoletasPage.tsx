@@ -81,10 +81,10 @@ export const DescargaBoletasPage = () => {
                     <CardContent className="flex flex-col items-center justify-center py-12">
                         <LogIn className="w-16 h-16 text-muted-foreground mb-4" />
                         <h2 className="text-xl font-semibold mb-2">
-                            Inicia sesión para ver tus boletos
+                            Inicia sesión para ver tus imágenes
                         </h2>
                         <p className="text-muted-foreground text-center mb-6">
-                            Debes iniciar sesión para acceder a tus órdenes y boletos comprados
+                            Debes iniciar sesión para acceder a tus órdenes y imágenes compradas
                         </p>
                         <Button onClick={() => navigate('/auth/login')}>
                             Ir a iniciar sesión

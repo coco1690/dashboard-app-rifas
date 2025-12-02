@@ -315,15 +315,15 @@ export const CustomHeader = () => {
   const { user, logout } = useAuthStore();
   const [isOpen, setIsOpen] = useState(false);
 
-  // ✅ REEMPLAZAR ESTA LÍNEA
+  //  REEMPLAZAR ESTA LÍNEA
   // const [cartCount] = useState(0); 
-  const cartCount = useContadorCarrito(); // ✅ NUEVA LÍNEA
+  const cartCount = useContadorCarrito(); 
 
-  // ✅ AGREGAR ESTADOS PARA ANIMACIÓN
+  //  AGREGAR ESTADOS PARA ANIMACIÓN
   const [isAnimating, setIsAnimating] = useState(false);
   const [prevCount, setPrevCount] = useState(0);
 
-  // ✅ AGREGAR EFFECT PARA DETECTAR CAMBIOS
+  // AGREGAR EFFECT PARA DETECTAR CAMBIOS
   useEffect(() => {
     if (cartCount > prevCount) {
       setIsAnimating(true);
@@ -525,7 +525,7 @@ export const CustomHeader = () => {
                   : "border-transparent"
                   }`}
               >
-                Descarga de Boletas
+                Descarga de Imagenes
               </Link>
             </nav>
           </div>

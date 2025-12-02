@@ -208,7 +208,7 @@ export const useCarritoStore = create<CarritoStore>()(
           const expirado = new Date(item.expira_en) <= ahora
           if (expirado) {
             console.log(`⏰ Removiendo item expirado useCarritoStore: ${item.rifaTitulo}`)
-            useReservaStore.getState().liberarReserva(item.reserva_id)
+            // useReservaStore.getState().liberarReserva(item.reserva_id)
           }
           return !expirado
         })

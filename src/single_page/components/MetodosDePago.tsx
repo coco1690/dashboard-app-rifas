@@ -143,7 +143,7 @@ export const MetodosDePago = () => {
                 </h3>
                 <p className="text-gray-700 leading-relaxed mb-6">
                   Todos nuestros métodos de pago están verificados y son 100% seguros.
-                  Una vez realizado el pago, recibirás la confirmación de tu boleto por WhatsApp y correo electrónico el cual tienes registrado.
+                  Una vez realizado el pago, recibirás la confirmación de tus imágenes por WhatsApp y correo electrónico el cual tienes registrado.
                 </p>
                 <div className="flex flex-wrap justify-center gap-4 text-sm text-gray-600">
                   <div className="flex items-center">

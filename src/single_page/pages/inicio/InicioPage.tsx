@@ -318,7 +318,7 @@ export const InicioPage = () => {
                                 ¡Participa Ahora!
                             </h2>
                             <p className="text-gray-600 text-lg">
-                                Selecciona la cantidad de números que deseas comprar
+                                Selecciona la cantidad de imágenes que deseas comprar
                             </p>
                         </div>
 
@@ -366,7 +366,7 @@ export const InicioPage = () => {
                 emoji=""
                 numbers={numeroDeLaSuerte.length > 0
                     ? numeroDeLaSuerte
-                    : ["No hay números de la suerte disponibles."]
+                    : ["No hay imágenes de la suerte disponibles."]
                 }
                 numerosGanadores={numerosGanadores} 
             />

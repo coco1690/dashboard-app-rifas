@@ -12,7 +12,6 @@ export const CustomFooter = () => {
             <CustomLogo />
 
             <p className="text-sm text-muted-foreground">
-              El juego responsable es clave. Jugar sin límites puede generar adicción.
               Recuerda que el juego es para entretenimiento, disfrútalo con moderación.
               Se prohíbe la venta a menores de edad.
             </p>

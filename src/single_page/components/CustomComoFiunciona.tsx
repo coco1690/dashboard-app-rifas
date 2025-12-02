@@ -26,7 +26,7 @@ export const CustomComoFiunciona = () => {
               <h3 className="text-sm lg:text-lg font-medium text-gray-400 leading-relaxed">
                 El evento se jugará cuando se<br />
                 hayan vendido el 100% de<br />
-                números disponibles.
+                de las imagenes disponibles.
               </h3>
             </div>
           </div>

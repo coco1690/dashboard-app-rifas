@@ -342,7 +342,7 @@ export const CustomTicketSelector = ({
                   pkg.isRecommended && selectedPackage === pkg.quantity ? "text-white/90" : 
                   pkg.isRecommended ? "text-amber-600/80" : "text-gray-600"
                 )}>
-                  Números
+                  Imágenes
                 </div>
                 <div className={cn(
                   "text-[10px] md:text-xs font-semibold mt-0.5 md:mt-1",
@@ -429,7 +429,7 @@ export const CustomTicketSelector = ({
           ${totalPrice.toLocaleString()}
         </div>
         <p className="text-xs text-gray-500">
-          ${precioBoleta.toLocaleString()} por número
+          ${precioBoleta.toLocaleString()} por imágen
         </p>
       </div>
 
@@ -443,13 +443,13 @@ export const CustomTicketSelector = ({
         {reservando ? (
           <>
             <Loader2 className="w-4 h-4 md:w-5 md:h-5 mr-2 animate-spin" />
-            RESERVANDO NÚMEROS...
+            RESERVANDO IMÁGENES...
           </>
         ) : (
           <>
             <ShoppingCart className="w-4 h-4 md:w-5 md:h-5 mr-2" />
             {canAddToCart() 
-              ? `AÑADIR ${totalTickets} NÚMERO${totalTickets > 1 ? 'S' : ''} AL CARRITO`
+              ? `AÑADIR ${totalTickets} IMÁGEN${totalTickets > 1 ? 'ES' : ''} AL CARRITO`
               : 'SELECCIONA UNA CANTIDAD VÁLIDA'
             }
           </>
@@ -460,7 +460,7 @@ export const CustomTicketSelector = ({
       {canAddToCart() && !reservando && (
         <div className="text-center">
           <p className="text-xs text-gray-500">
-            🔒 Tus números serán reservados por 10 minutos
+            🔒 Tus imágenes serán reservadas por 10 minutos
           </p>
         </div>
       )}
