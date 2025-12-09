@@ -43,7 +43,7 @@ export const NumerosDeLaSuerte = ({ numbers, emoji = '', numerosGanadores = [] }
                                     </div>
                                     {esGanador && (
                                         <p className="text-sm text-gray-500">
-                                            ¡Premio Entregado!
+                                            ¡Entregado!
                                         </p>
                                     )}
                                 </div>
