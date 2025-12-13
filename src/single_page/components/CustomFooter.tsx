@@ -74,7 +74,7 @@ export const CustomFooter = () => {
 
                 {/* TikTok */}
                 <a
-                  href="https://www.tiktok.com/@tu-usuario"
+                  href="https://vm.tiktok.com/ZMHwfThws9ncL-X6R22/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-2 rounded-full bg-gray-800 hover:bg-black transition-all duration-300 group"
@@ -91,7 +91,7 @@ export const CustomFooter = () => {
 
                 {/* Telegram */}
                 <a
-                  href="https://t.me/tu-canal"
+                  href="https://t.me/EventosIBCom"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="p-2 rounded-full bg-gray-800 hover:bg-blue-500 transition-all duration-300 group"
