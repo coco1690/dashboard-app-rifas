@@ -20,7 +20,7 @@ export const CustomLogo = ({ subtitle = 'IB' }: Props) => {
                     .com
                 </span>
             </div>
-            <span className="text-3xl drop-shadow-[0_0_8px_rgba(34,197,94,0.5)]">🎄</span>
+            {/* <span className="text-3xl drop-shadow-[0_0_8px_rgba(34,197,94,0.5)]">🎄</span> */}
         </div>
     </Link>
   )
